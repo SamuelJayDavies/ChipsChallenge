@@ -22,6 +22,7 @@ public class MainMenuController extends Application {
 // GitHub Commit Test
     public static void main(String[] args) {
         launch(args);
+        System.out.println("Alfs Commit Test")
     }
 
     public void switchToTest(ActionEvent event) throws IOException {
