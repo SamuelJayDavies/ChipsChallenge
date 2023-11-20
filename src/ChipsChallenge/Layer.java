@@ -15,17 +15,16 @@ public class Layer extends Application {
     private Canvas actorCanvas;
 
     // Method to initialize the tile layer
+    //probably will be implemented later
     public void initTileLayer() {
     }
-
-    // Method to initialize the item layer
+    
     public void initItemLayer() {
-        // Implement the initialization of the item layer if needed
+        
     }
 
-    // Method to initialize the actor layer
     public void initActorLayer() {
-        // Implement the initialization of the actor layer if needed
+        
     }
     //and this should be added to the primaryStage class after
     @Override
