@@ -153,6 +153,10 @@ public class Main extends Application {
 		for (int x = 0; x < GRID_WIDTH; x++) {
 			gc.drawImage(dirtImage, x * GRID_CELL_WIDTH, 2 * GRID_CELL_HEIGHT);	
 		}
+
+		for (int x = 0; x < GRID_WIDTH; x++) {
+			gc.drawImage(dirtImage, x * GRID_CELL_WIDTH, 6 * GRID_CELL_HEIGHT);
+		}
 		
 		// Draw player at current location
 		gc.drawImage(playerImage, playerX * GRID_CELL_WIDTH, playerY * GRID_CELL_HEIGHT);			
