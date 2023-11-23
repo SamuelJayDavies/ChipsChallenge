@@ -22,6 +22,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  * Sample application that demonstrates the use of JavaFX Canvas for a Game.
@@ -174,6 +176,13 @@ public class Main extends Application {
 		playerY = 2;
 		drawGame();		
 	}
+	private void showAlert(String message) {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Game Over");
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+		alert.showAndWait();
+	}
 	
 	/**
 	 * This method is called periodically by the tick timeline
@@ -187,10 +196,12 @@ public class Main extends Application {
 		playerX = playerX + 1;
 		if (playerX > 11) {
 			playerX = 0;
+			showAlert("Congratulations! You reached the rightmost edge!");
 		}
 		// We then redraw the whole canvas.
 		drawGame();
 	}
+	
 	
 	/**
 	 * React when an object is dragged onto the canvas. 

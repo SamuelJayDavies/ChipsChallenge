@@ -1,14 +1,13 @@
 package ChipsChallenge;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MainMenuController extends Application {
+public class GameController extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -22,9 +21,5 @@ public class MainMenuController extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public void switchToTest(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/main-menu.fxml"));
     }
 }
