@@ -151,8 +151,17 @@ public class Main extends Application {
 		// We multiply by the cell width and height to turn a coordinate in our grid into a pixel coordinate.
 		// We draw the row at y value 2.
 		for (int x = 0; x < GRID_WIDTH; x++) {
-			gc.drawImage(dirtImage, x * GRID_CELL_WIDTH, 2 * GRID_CELL_HEIGHT);	
+			gc.drawImage(new Image("images/stuff/dirt.png"), x * GRID_CELL_WIDTH, 2 * GRID_CELL_HEIGHT);
 		}
+
+		for (int x = 0; x < GRID_WIDTH; x++) {
+			gc.drawImage(new Image("images/stuff/path.png"), x * GRID_CELL_WIDTH, 3 * GRID_CELL_HEIGHT);
+		}
+
+		for (int x = 0; x < GRID_WIDTH; x++) {
+			gc.drawImage(new Image("images/stuff/lava.png"), x * GRID_CELL_WIDTH, 4 * GRID_CELL_HEIGHT);
+		}
+
 
 		for (int x = 0; x < GRID_WIDTH; x++) {
 			gc.drawImage(dirtImage, x * GRID_CELL_WIDTH, 6 * GRID_CELL_HEIGHT);

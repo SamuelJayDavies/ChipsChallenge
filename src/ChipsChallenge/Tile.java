@@ -1,31 +1,40 @@
 package ChipsChallenge;
 
-public class Tile {
-    private String type;
+import javafx.scene.image.Image;
 
-    public Tile(String type) {
+public class Tile {
+    private final TileType type;
+
+    private final Image image;
+
+    public Tile(TileType type, Image image) {
         this.type = type;
+        this.image = image;
     }
 
-    public String getType() {
+    public TileType getType() {
         return type;
+    }
+
+    public Image getImage() {
+        return image;
     }
 }
 
 class PathTile extends Tile {
     public PathTile() {
-        super("path");
+        super(TileType.PATH, new Image("../images/stuff/path.png"));
     }
 }
 
 class WallTile extends Tile {
     public WallTile() {
-        super("wall");
+        super(TileType.WALL, new Image("../images/stuff/wall.png"));
     }
 }
 
 class WaterTile extends Tile {
     public WaterTile() {
-        super("water");
+        super(TileType.WATER, new Image("../images/stuff/lava.png"));
     }
 }

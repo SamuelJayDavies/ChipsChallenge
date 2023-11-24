@@ -1,10 +1,14 @@
 package ChipsChallenge;
 
 import com.sun.javafx.scene.traversal.Direction;
+import javafx.scene.image.Image;
 
 public abstract class Actor {
-    private int x , y;
-   private Direction direction;
+
+    private int x,y;
+    private Direction direction;
+
+    private Image image;
 
     public Actor (int x, int y) {
         this.x = x;
