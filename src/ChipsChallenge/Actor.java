@@ -3,13 +3,12 @@ package ChipsChallenge;
 import com.sun.javafx.scene.traversal.Direction;
 
 public abstract class Actor {
-    int x , y;
-    Direction direction;
+    private int x , y;
+   private Direction direction;
 
     public Actor (int x, int y) {
         this.x = x;
         this.y = y;
-        this.direction = direction;
     }
 
     public int getX() {

@@ -2,15 +2,14 @@ package ChipsChallenge;
 
 import com.sun.javafx.scene.traversal.Direction;
 
-import java.util.Scanner;
+public class PinkBall extends Actor {
 
-public class Player extends Actor{
     private int x,y;
     private Direction direction;
 
-    public Player(int x, int y, Direction direction) {
+    public PinkBall(int x, int y,Direction direction) {
         super(x, y);
-        this.direction = Direction.RIGHT;
+        this.direction = direction;
     }
 
     public int getX() {
@@ -36,10 +35,13 @@ public class Player extends Actor{
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
-
-
     @Override
     public void moveActor() {
 
     }
+
+    public void reverseDirection() {
+
+    }
+
 }
