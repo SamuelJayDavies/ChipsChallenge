@@ -1,0 +1,5 @@
+p,p,di,w,b
+w,w,p,p,p
+wt,w,t,p,wt
+itr,i,p,p,wt
+ibl,i,dr,cs5,E

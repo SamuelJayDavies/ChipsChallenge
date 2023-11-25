@@ -35,7 +35,7 @@
          <children>
             <HBox alignment="BOTTOM_LEFT" prefHeight="140.0" prefWidth="687.0">
                <children>
-                  <Button mnemonicParsing="false" text="Reset">
+                  <Button mnemonicParsing="false" onAction="#testMethod" text="Reset">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" />
                      </HBox.margin>

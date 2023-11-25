@@ -1,15 +1,23 @@
 package ChipsChallenge;
 
+import java.util.Scanner;
+
 public class TileLayer {
     private Tile[][] tiles;
 
-    public TileLayer(int width, int height) {
-        tiles = new Tile[width][height];
-        initializeTiles();
+    public TileLayer(int width, int height, Scanner levelScanner) {
+        this.tiles = new Tile[width][height];
+        initialiseTiles(levelScanner);
     }
 
-    private void initializeTiles() {
-        // You can customize this method to initialize tiles based on your game's requirements.
+    private void initialiseTiles(Scanner levelScanner) {
+        while (levelScanner.hasNextLine()) {
+            String currentRow = levelScanner.nextLine();
+            String[] tiles = currentRow.split(",");
+            for (int i=0; i<tiles.length; i++) {
+
+            }
+        }
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
                 String type = (i + j) % 3 == 0 ? "path" : (i + j) % 3 == 1 ? "wall" : "water";
@@ -19,7 +27,6 @@ public class TileLayer {
     }
 
     private Tile createTile(String type) {
-        // You can expand this method to create different types of tiles based on the type string.
         switch (type) {
             case "path":
                 return new PathTile();

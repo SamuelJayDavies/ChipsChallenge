@@ -40,6 +40,11 @@ public class GameController extends Application {
         levelNameTxt.setText("They hunt in packs");
     }
 
+    @FXML
+    public void testMethod() {
+        Game.testFunction();
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
