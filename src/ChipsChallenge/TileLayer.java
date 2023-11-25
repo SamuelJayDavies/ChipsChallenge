@@ -11,28 +11,32 @@ public class TileLayer {
     }
 
     private void initialiseTiles(Scanner levelScanner) {
+        int j=0;
         while (levelScanner.hasNextLine()) {
             String currentRow = levelScanner.nextLine();
-            String[] tiles = currentRow.split(",");
+            String[] currentTiles = currentRow.split(",");
             for (int i=0; i<tiles.length; i++) {
-
+                tiles[j][i] = identifyTile(currentTiles[i]);
             }
+            j++;
         }
+        /**
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
                 String type = (i + j) % 3 == 0 ? "path" : (i + j) % 3 == 1 ? "wall" : "water";
                 tiles[i][j] = createTile(type);
             }
         }
+         */
     }
 
-    private Tile createTile(String type) {
+    private Tile identifyTile(String type) {
         switch (type) {
-            case "path":
+            case "p":
                 return new PathTile();
-            case "wall":
+            case "w":
                 return new WallTile();
-            case "water":
+            case "wt":
                 return new WaterTile();
             default:
                 return null;
