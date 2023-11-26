@@ -1,12 +1,14 @@
 package ChipsChallenge;
 
+import javafx.scene.image.Image;
+
 import java.util.Scanner;
 
 public class TileLayer {
     private Tile[][] tiles;
 
     public TileLayer(int width, int height, Scanner levelScanner) {
-        this.tiles = new Tile[width][height];
+        this.tiles = new Tile[height][width];
         initialiseTiles(levelScanner);
     }
 
@@ -15,31 +17,47 @@ public class TileLayer {
         while (levelScanner.hasNextLine()) {
             String currentRow = levelScanner.nextLine();
             String[] currentTiles = currentRow.split(",");
-            for (int i=0; i<tiles.length; i++) {
+            for (int i=0; i<tiles[j].length; i++) {
                 tiles[j][i] = identifyTile(currentTiles[i]);
             }
             j++;
         }
-        /**
-        for (int i = 0; i < tiles.length; i++) {
-            for (int j = 0; j < tiles[i].length; j++) {
-                String type = (i + j) % 3 == 0 ? "path" : (i + j) % 3 == 1 ? "wall" : "water";
-                tiles[i][j] = createTile(type);
-            }
-        }
-         */
     }
 
     private Tile identifyTile(String type) {
         switch (type) {
             case "p":
-                return new PathTile();
+                return new Path();
+            case "di":
+                return new Dirt();
             case "w":
-                return new WallTile();
+                return new Wall();
+            case "e":
+                return new Exit();
+            case "b":
+                return new Button();
+            case "t":
+                return new Trap();
             case "wt":
-                return new WaterTile();
+                return new Water();
+            case "i":
+                return new Ice();
+            case "itr":
+                return new Tile(TileType.ICETR, new Image("images/stuff/iceTR.png"));
+            case "itl":
+                return new Tile(TileType.ICETL, new Image("images/stuff/iceTL.png"));
+            case "ibr":
+                return new Tile(TileType.ICEBR, new Image("images/stuff/iceBR.png"));
+            case "ibl":
+                return new Tile(TileType.ICEBL, new Image("images/stuff/iceBL.png"));
             default:
-                return null;
+                if(type.charAt(0) == 'c' && type.charAt(1) == 's') {
+                    return new ChipSocket();
+                } else if(type.charAt(0) == 'd') {
+                    return new Door(Colour.RED);
+                } else {
+                    return null;
+                }
         }
     }
 
@@ -48,6 +66,10 @@ public class TileLayer {
             return tiles[x][y];
         }
         return null;
+    }
+
+    public Tile[][] getTiles() {
+        return tiles;
     }
 
     private boolean isValidCoordinate(int x, int y) {

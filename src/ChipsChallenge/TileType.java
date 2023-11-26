@@ -14,6 +14,7 @@ public enum TileType {
     ICETR,
     ICETL,
     ICEBR,
-    ICEBL
+    ICEBL,
+    DOOR
 
 }

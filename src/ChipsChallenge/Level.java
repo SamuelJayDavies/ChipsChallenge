@@ -2,6 +2,8 @@ package ChipsChallenge;
 
 public class Level {
 
+    private int levelNum;
+
     private TileLayer tileLayer;
 
     private ItemLayer itemLayer;

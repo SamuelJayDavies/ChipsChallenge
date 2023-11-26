@@ -1,8 +1,9 @@
 package ChipsChallenge;
 
+import ChipsChallenge.Actor;
 import com.sun.javafx.scene.traversal.Direction;
 
-public class Bug extends Actor{
+public class Bug extends Actor {
 
     private int x, y;
     private Direction direction;

@@ -1,10 +1,9 @@
 package ChipsChallenge;
 
+import ChipsChallenge.Actor;
 import com.sun.javafx.scene.traversal.Direction;
 
-import java.util.Scanner;
-
-public class Player extends Actor{
+public class Player extends Actor {
     private int x,y;
     private Direction direction;
 

@@ -1,5 +1,7 @@
 package ChipsChallenge;
 
+import ChipsChallenge.Item;
+
 class Key extends Item {
     private String color; // Color of the key
 

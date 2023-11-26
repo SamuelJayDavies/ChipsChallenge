@@ -1,5 +1,6 @@
 package ChipsChallenge;
 
+import ChipsChallenge.Actor;
 import com.sun.javafx.scene.traversal.Direction;
 
 public class PinkBall extends Actor {

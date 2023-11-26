@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -15,6 +17,9 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class GameController extends Application {
+
+    @FXML
+    private Canvas mainCanvas;
 
     @FXML
     private HBox levelNameBox;
@@ -30,6 +35,11 @@ public class GameController extends Application {
 
     @FXML
     private Button saveBtn;
+
+    @FXML
+    private Button saveReturnBtn;
+
+    private TileLayer testLayer;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -54,10 +64,22 @@ public class GameController extends Application {
 
     @FXML
     public void testFileLoad() throws FileNotFoundException {
-        File myFile = new File("src/levels/level1.txt");
+        File myFile = new File("src/levels/level2.txt");
         Scanner myReader = new Scanner(myFile);
-        TileLayer testLayer = new TileLayer(5,5,myReader);
+        testLayer = new TileLayer(15,7,myReader);
         System.out.println(testLayer);
+    }
+
+    @FXML
+    private void drawGame() {
+        GraphicsContext gc = mainCanvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
+        Tile[][] tileLayer = testLayer.getTiles();
+        for(int i=0; i<tileLayer.length; i++) {
+            for(int j=0; j<tileLayer[i].length; j++) {
+                gc.drawImage(tileLayer[i][j].getImage(), j * 50, i * 50);
+            }
+        }
     }
 
     public static void main(String[] args) {

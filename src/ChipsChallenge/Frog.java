@@ -1,8 +1,8 @@
 package ChipsChallenge;
 
-import com.sun.javafx.scene.traversal.Direction;
+import ChipsChallenge.Actor;
 
-public class Frog extends Actor{
+public class Frog extends Actor {
 
     private int x, y;
     public Frog(int x, int y) {
