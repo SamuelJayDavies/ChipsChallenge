@@ -1,31 +1,23 @@
 package ChipsChallenge;
 
+import javafx.scene.image.Image;
+
 class Item {
     // Common properties
-    private String name;
-    private int row;
-    private int col;
+    private ItemType type;
+    private Image image;
 
     // Constructor to initialize item properties
-    public Item(String name, int row, int col) {
-        this.name = name;
-        this.row = row;
-        this.col = col;
+    public Item(ItemType type, Image image) {
+        this.type = type;
+        this.image = image;
     }
 
-    // Getters
-    // Retrieve the name of the item
-    public String getName() {
-        return name;
+    public ItemType getType() {
+        return type;
     }
 
-    // Retrieve the row coordinate of the item
-    public int getRow() {
-        return row;
-    }
-
-    // Retrieve the column coordinate of the item
-    public int getCol() {
-        return col;
+    public Image getImage() {
+        return image;
     }
 }

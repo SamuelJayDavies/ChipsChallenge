@@ -39,7 +39,9 @@ public class GameController extends Application {
     @FXML
     private Button saveReturnBtn;
 
-    private TileLayer testLayer;
+    private TileLayer tileLayer;
+
+    private ItemLayer itemLayer;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -55,6 +57,8 @@ public class GameController extends Application {
     private void initialize() {
         levelNumTxt.setText("level 1");
         levelNameTxt.setText("They hunt in packs");
+        testFileLoad();
+        drawGame();
     }
 
     @FXML
@@ -63,21 +67,48 @@ public class GameController extends Application {
     }
 
     @FXML
-    public void testFileLoad() throws FileNotFoundException {
+    public void testFileLoad()  {
         File myFile = new File("src/levels/level2.txt");
-        Scanner myReader = new Scanner(myFile);
-        testLayer = new TileLayer(15,7,myReader);
-        System.out.println(testLayer);
+        Scanner myReader = null;
+        try {
+            myReader = new Scanner(myFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        this.tileLayer = new TileLayer(15, 7, splitFile(myReader));
+        this.itemLayer = new ItemLayer(15, 7, splitFile(myReader));
+    }
+
+    private String[] splitFile(Scanner levelFile) {
+        String[] tileArr = new String[7];
+        boolean layerFinished = false;
+        int i = 0;
+        while(!layerFinished) {
+            String nextLine = levelFile.nextLine();
+            if(!(nextLine.equals(""))) {
+                tileArr[i] = nextLine;
+                i++;
+            } else {
+                layerFinished = true;
+            }
+        }
+        return tileArr;
     }
 
     @FXML
     private void drawGame() {
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
-        Tile[][] tileLayer = testLayer.getTiles();
-        for(int i=0; i<tileLayer.length; i++) {
-            for(int j=0; j<tileLayer[i].length; j++) {
-                gc.drawImage(tileLayer[i][j].getImage(), j * 50, i * 50);
+        Tile[][] tileLayerGraphics = tileLayer.getTiles();
+        for(int i=0; i<tileLayerGraphics.length; i++) {
+            for(int j=0; j<tileLayerGraphics[i].length; j++) {
+                gc.drawImage(tileLayerGraphics[i][j].getImage(), j * 50, i * 50);
+            }
+        } // Make these for loops into a method
+        Item[][] itemLayerGraphics = itemLayer.getItems(); // Need to make this more efficient, far to slow
+        for(int i=0; i<itemLayerGraphics.length; i++) {
+            for(int j=0; j<itemLayerGraphics[i].length; j++) {
+                gc.drawImage(itemLayerGraphics[i][j].getImage(), j * 50, i * 50);
             }
         }
     }

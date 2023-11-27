@@ -1,19 +1,15 @@
 package ChipsChallenge;
 
 import ChipsChallenge.Item;
+import javafx.scene.image.Image;
 
 class Key extends Item {
-    private String color; // Color of the key
+    private char color; // Color of the key
 
     // Constructor to create a Key with a specific color at a certain location
-    public Key(String color, int row, int col) {
+    public Key(char color) {
         // Calls the constructor of the Item class with the name "Key" and the specified location
-        super("Key", row, col);
+        super(ItemType.KEY, new Image("images/stuff/keys.png"));
         this.color = color;
-    }
-
-    // Getter to retrieve the color of the key
-    public String getColor() {
-        return color;
     }
 }

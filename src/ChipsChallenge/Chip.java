@@ -1,9 +1,10 @@
 package ChipsChallenge;
 
+import javafx.scene.image.Image;
+
 class Chip extends Item {
-    // Constructor to create a Chip at a specific location
-    public Chip(int row, int col) {
-        // Calls the constructor of the base class (Item) with the name "Chip"
-        super("Chip", row, col);
+
+    public Chip() {
+        super(ItemType.CHIP, new Image("images/stuff/computer chip.png"));
     }
 }

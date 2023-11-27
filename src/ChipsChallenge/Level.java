@@ -11,7 +11,7 @@ public class Level {
 
     public Level(String levelTxt) {
         this.tileLayer = new TileLayer(2,2, null);
-        this.itemLayer = new ItemLayer(2,2);
+        this.itemLayer = new ItemLayer(2,2, null);
         this.actorLayer = new ActorLayer(/** Section of levelTxt */);
     }
 }
