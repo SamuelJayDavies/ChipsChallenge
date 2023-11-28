@@ -70,7 +70,7 @@ public class GameController extends Application {
     public void testFileLoad()  {
         File myFile = new File("src/levels/level2.txt");
         Scanner myReader = null;
-        try {
+        try {  // Change this to just throw fileNotFoundException and crash program
             myReader = new Scanner(myFile);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
