@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChipsChallenge.GameController">
+<AnchorPane onKeyPressed="#storeKeyEvent" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChipsChallenge.GameController">
    <children>
       <ImageView fitHeight="600.0" fitWidth="1077.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -60,7 +60,7 @@
             </HBox>
             <HBox alignment="BOTTOM_RIGHT">
                <children>
-                  <Label alignment="TOP_RIGHT" contentDisplay="BOTTOM" text="Time: 120">
+                  <Label alignment="TOP_RIGHT" contentDisplay="BOTTOM" text="Time: 120" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="30.0" />
                      </font>
@@ -68,7 +68,7 @@
                         <Insets right="20.0" />
                      </HBox.margin>
                   </Label>
-                  <Label contentDisplay="BOTTOM" text="Chips: 001">
+                  <Label contentDisplay="BOTTOM" text="Chips: 001" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="30.0" />
                      </font>
@@ -82,7 +82,7 @@
       </HBox>
       <AnchorPane layoutX="-1.0" layoutY="113.0" prefHeight="348.0" prefWidth="1000.0">
          <children>
-            <Canvas fx:id="mainCanvas" height="348.0" layoutY="-1.0" width="1000.0" />
+            <Canvas fx:id="mainCanvas" height="348.0" layoutX="86.0" layoutY="-1.0" width="784.0" />
          </children>
       </AnchorPane>
    </children>

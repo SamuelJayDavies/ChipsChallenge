@@ -1,5 +1,7 @@
 package ChipsChallenge;
 
+import java.util.Scanner;
+
 public class Level {
 
     private int levelNum;
@@ -9,9 +11,21 @@ public class Level {
     private ItemLayer itemLayer;
     private ActorLayer actorLayer;
 
-    public Level(String levelTxt) {
-        this.tileLayer = new TileLayer(2,2, null);
-        this.itemLayer = new ItemLayer(2,2, null);
-        this.actorLayer = new ActorLayer(2,2);
+    public Level(int width, int height, String[][] layers) {
+        this.tileLayer = new TileLayer(width, height, layers[0]);
+        this.itemLayer = new ItemLayer(width, height, layers[1]);
+        this.actorLayer = new ActorLayer(width, height, layers[2]);
+    }
+
+    public TileLayer getTileLayer() {
+        return tileLayer;
+    }
+
+    public ItemLayer getItemLayer() {
+        return itemLayer;
+    }
+
+    public ActorLayer getActorLayer() {
+        return actorLayer;
     }
 }
