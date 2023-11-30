@@ -33,4 +33,9 @@ public class HighScore {
         }
         highScore.add(i, newUserScore);
     }
+
+    // Return the entire scoreboard as an array of objects, storing the username and score.
+    public ArrayList<UserScore> getScoreboard(){
+        return highScore;
+    }
 }
