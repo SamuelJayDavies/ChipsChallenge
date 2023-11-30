@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -108,7 +109,10 @@ public class GameController extends Application {
         Item[][] itemLayerGraphics = itemLayer.getItems(); // Need to make this more efficient, far to slow
         for(int i=0; i<itemLayerGraphics.length; i++) {
             for(int j=0; j<itemLayerGraphics[i].length; j++) {
-                gc.drawImage(itemLayerGraphics[i][j].getImage(), j * 50, i * 50);
+                Image currentGraphic = itemLayerGraphics[i][j].getImage();
+                if(currentGraphic != null) {
+                    gc.drawImage(currentGraphic, j * 50, i * 50);
+                }
             }
         }
     }

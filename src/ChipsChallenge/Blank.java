@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 public class Blank extends Item {
 
     public Blank() {
-        super(ItemType.NOTHING, new Image("images/stuff/blank.png"));
+        super(ItemType.NOTHING, null);
     }
 
 
