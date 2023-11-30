@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameController extends Application {
@@ -39,6 +40,12 @@ public class GameController extends Application {
     private Label levelNameTxt;
 
     @FXML
+    private Label chipNumber;
+
+    @FXML
+    private Label timeLbl;
+
+    @FXML
     private HBox gameBox;
 
     @FXML
@@ -52,6 +59,12 @@ public class GameController extends Application {
     private Timeline tickTimeline;
 
     private KeyCode nextMove;
+
+    private ArrayList<Item> inventory; // should probably move this
+
+    private int chipCount = 0;
+
+    private double currentTime = 120;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -67,9 +80,10 @@ public class GameController extends Application {
     private void initialize() {
         levelNumTxt.setText("level 1");
         levelNameTxt.setText("They hunt in packs");
+        inventory = new ArrayList<>();
         testFileLoad();
         drawGame();
-        tickTimeline = new Timeline(new KeyFrame(Duration.millis(2000), event -> tick()));
+        tickTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> tick()));
         tickTimeline.setCycleCount(Animation.INDEFINITE);
         tickTimeline.play();
     }
@@ -140,6 +154,8 @@ public class GameController extends Application {
                 }
             }
         }
+        chipNumber.setText("Chips: " + chipCount);
+        timeLbl.setText("Time: " + currentTime);
     }
 
     @FXML
@@ -155,8 +171,12 @@ public class GameController extends Application {
         if(nextMove == KeyCode.W || nextMove == KeyCode.A
                 || nextMove == KeyCode.S || nextMove == KeyCode.D) {
             int[] newPosition = getNewPosition(currentPlayer.getX(), currentPlayer.getY());
-            currentLevel.getActorLayer().updateActor(currentPlayer, newPosition[0], newPosition[1]);
+            if(isValidMove(newPosition)) {
+                currentLevel.getActorLayer().updateActor(currentPlayer, newPosition[0], newPosition[1]);
+                collisionOccurred(newPosition);
+            }
         }
+        currentTime = currentTime - 0.5;
         nextMove = null;
         drawGame();
     }
@@ -173,6 +193,22 @@ public class GameController extends Application {
                 return new int[]{x, y+1};
             default:
                 return new int[]{x,y};
+        }
+    }
+
+    private boolean isValidMove(int[] position) {
+        return (position[0] < currentLevel.getWidth() && position[0] >= 0)
+                && (position[1] < currentLevel.getHeight() && position[1] >= 0);
+    }
+
+    private void collisionOccurred(int[] position) {
+        Item possibleItem = currentLevel.getItemLayer().getItemAt(position[0], position[1]);
+        if (possibleItem.getType() != ItemType.NOTHING) {
+            inventory.add(possibleItem);
+            currentLevel.getItemLayer().removeItem(position[0], position[1]);
+            if(possibleItem.getType() == ItemType.CHIP) {
+                chipCount++;
+            }
         }
     }
 
