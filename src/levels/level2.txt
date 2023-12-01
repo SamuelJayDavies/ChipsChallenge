@@ -1,3 +1,5 @@
+15,7
+
 p,p,p,p,p,p,p,p,p,p,p,p,p,p,p
 p,i,i,itr,p,p,w,w,w,p,p,wt,wt,wt,p
 p,p,p,i,p,p,b,p,w,t,p,wt,p,wt,p
@@ -14,4 +16,11 @@ n,kr,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 
-t
+p,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+

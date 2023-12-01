@@ -5,5 +5,7 @@ public enum ActorType {
     PINKBALL,
     BUG,
     PLAYER,
-    FROG
+    FROG,
+
+    NOACTOR
 }

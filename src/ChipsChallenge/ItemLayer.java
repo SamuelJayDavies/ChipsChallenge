@@ -58,4 +58,8 @@ class ItemLayer {
     public Item[][] getItems() {
         return items;
     }
+
+    public void removeItem(int x, int y) {
+        items[y][x] = new Blank();
+    }
 }
