@@ -74,7 +74,7 @@ public class Main extends Application {
 	 */
 	public void start(Stage primaryStage) {
 		// Load images. Note we use png images with a transparent background.
-		playerImage = new Image("images/player.png");
+		playerImage = new Image("images/stuff/player.png");
 		dirtImage = new Image("images/dirt.png");
 		iconImage = new Image("images/icon.png");
 

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChipsChallenge.GameController">
+<AnchorPane onKeyPressed="#storeKeyEvent" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChipsChallenge.GameController">
    <children>
       <ImageView fitHeight="600.0" fitWidth="1077.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -37,9 +37,9 @@
             </Label>
          </children>
       </HBox>
-      <HBox alignment="BOTTOM_RIGHT" layoutY="460.0" prefHeight="140.0" prefWidth="1000.0">
+      <HBox alignment="BOTTOM_RIGHT" layoutY="531.0" prefHeight="69.0" prefWidth="1000.0">
          <children>
-            <HBox alignment="BOTTOM_LEFT" prefHeight="140.0" prefWidth="687.0">
+            <HBox alignment="BOTTOM_LEFT" prefHeight="69.0" prefWidth="687.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#testMethod" text="Reset">
                      <HBox.margin>
@@ -58,9 +58,9 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="BOTTOM_RIGHT">
+            <HBox alignment="BOTTOM_RIGHT" prefHeight="84.0" prefWidth="314.0">
                <children>
-                  <Label alignment="TOP_RIGHT" contentDisplay="BOTTOM" text="Time: 120">
+                  <Label fx:id="timeLbl" alignment="TOP_RIGHT" contentDisplay="BOTTOM" text="Time: 120" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="30.0" />
                      </font>
@@ -68,7 +68,7 @@
                         <Insets right="20.0" />
                      </HBox.margin>
                   </Label>
-                  <Label contentDisplay="BOTTOM" text="Chips: 001">
+                  <Label fx:id="chipNumber" contentDisplay="BOTTOM" text="Chips: 000" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="30.0" />
                      </font>
@@ -82,7 +82,7 @@
       </HBox>
       <AnchorPane layoutX="-1.0" layoutY="113.0" prefHeight="348.0" prefWidth="1000.0">
          <children>
-            <Canvas fx:id="mainCanvas" height="348.0" layoutY="-1.0" width="1000.0" />
+            <Canvas fx:id="mainCanvas" height="348.0" layoutX="86.0" layoutY="-1.0" width="784.0" />
          </children>
       </AnchorPane>
    </children>

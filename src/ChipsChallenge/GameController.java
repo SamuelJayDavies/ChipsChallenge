@@ -1,5 +1,8 @@
 package ChipsChallenge;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,12 +11,18 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameController extends Application {
@@ -31,6 +40,12 @@ public class GameController extends Application {
     private Label levelNameTxt;
 
     @FXML
+    private Label chipNumber;
+
+    @FXML
+    private Label timeLbl;
+
+    @FXML
     private HBox gameBox;
 
     @FXML
@@ -39,9 +54,17 @@ public class GameController extends Application {
     @FXML
     private Button saveReturnBtn;
 
-    private TileLayer tileLayer;
+    private Level currentLevel;
 
-    private ItemLayer itemLayer;
+    private Timeline tickTimeline;
+
+    private KeyCode nextMove;
+
+    private ArrayList<Item> inventory; // should probably move this
+
+    private int chipCount = 0;
+
+    private double currentTime = 120;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -57,8 +80,12 @@ public class GameController extends Application {
     private void initialize() {
         levelNumTxt.setText("level 1");
         levelNameTxt.setText("They hunt in packs");
+        inventory = new ArrayList<>();
         testFileLoad();
         drawGame();
+        tickTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> tick()));
+        tickTimeline.setCycleCount(Animation.INDEFINITE);
+        tickTimeline.play();
     }
 
     @FXML
@@ -70,13 +97,17 @@ public class GameController extends Application {
     public void testFileLoad()  {
         File myFile = new File("src/levels/level2.txt");
         Scanner myReader = null;
-        try {
+        try {  // Change this to just throw fileNotFoundException and crash program
             myReader = new Scanner(myFile);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        this.tileLayer = new TileLayer(15, 7, splitFile(myReader));
-        this.itemLayer = new ItemLayer(15, 7, splitFile(myReader));
+        String[] dimensionsArr = splitFile(myReader)[0].split(",");
+        String[][] layers = new String[3][1];
+        for(int i=0; i<3; i++) {
+            layers[i] = splitFile(myReader);
+        }
+        this.currentLevel = new Level(Integer.parseInt(dimensionsArr[0]), Integer.parseInt(dimensionsArr[1]), layers);
     }
 
     private String[] splitFile(Scanner levelFile) {
@@ -99,16 +130,84 @@ public class GameController extends Application {
     private void drawGame() {
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
-        Tile[][] tileLayerGraphics = tileLayer.getTiles();
+        Tile[][] tileLayerGraphics = currentLevel.getTileLayer().getTiles();
         for(int i=0; i<tileLayerGraphics.length; i++) {
             for(int j=0; j<tileLayerGraphics[i].length; j++) {
                 gc.drawImage(tileLayerGraphics[i][j].getImage(), j * 50, i * 50);
             }
         } // Make these for loops into a method
-        Item[][] itemLayerGraphics = itemLayer.getItems(); // Need to make this more efficient, far to slow
+        Item[][] itemLayerGraphics = currentLevel.getItemLayer().getItems(); // Need to make this more efficient, far to slow
         for(int i=0; i<itemLayerGraphics.length; i++) {
             for(int j=0; j<itemLayerGraphics[i].length; j++) {
-                gc.drawImage(itemLayerGraphics[i][j].getImage(), j * 50, i * 50);
+                Image currentGraphic = itemLayerGraphics[i][j].getImage();
+                if(currentGraphic != null) {
+                    gc.drawImage(currentGraphic, j * 50, i * 50);
+                }
+            }
+        }
+        Actor[][] actorLayerGraphics = currentLevel.getActorLayer().getActors();
+        for(int i=0; i<actorLayerGraphics.length; i++) {
+            for(int j=0; j<actorLayerGraphics[i].length; j++) {
+                Image currentGraphic = actorLayerGraphics[i][j].getImage();
+                if(currentGraphic != null) {
+                    gc.drawImage(currentGraphic, j * 50, i * 50);
+                }
+            }
+        }
+        chipNumber.setText("Chips: " + chipCount);
+        timeLbl.setText("Time: " + currentTime);
+    }
+
+    @FXML
+    public void storeKeyEvent(KeyEvent event) {
+        // We change the behaviour depending on the actual key that was pressed.
+        nextMove = event.getCode();
+        // Consume the event. This means we mark it as dealt with. This stops other GUI nodes (buttons etc) responding to it.
+        event.consume();
+    }
+
+    public void tick() {
+        Player currentPlayer = currentLevel.getActorLayer().getPlayer();
+        if(nextMove == KeyCode.W || nextMove == KeyCode.A
+                || nextMove == KeyCode.S || nextMove == KeyCode.D) {
+            int[] newPosition = getNewPosition(currentPlayer.getX(), currentPlayer.getY());
+            if(isValidMove(newPosition)) {
+                currentLevel.getActorLayer().updateActor(currentPlayer, newPosition[0], newPosition[1]);
+                collisionOccurred(newPosition);
+            }
+        }
+        currentTime = currentTime - 0.5;
+        nextMove = null;
+        drawGame();
+    }
+
+    private int[] getNewPosition(int x, int y) {
+        switch (nextMove) {
+            case D:
+                return new int[]{x+1,y};
+            case A:
+                return new int[]{x-1,y};
+            case W:
+                return new int[]{x, y-1};
+            case S:
+                return new int[]{x, y+1};
+            default:
+                return new int[]{x,y};
+        }
+    }
+
+    private boolean isValidMove(int[] position) {
+        return (position[0] < currentLevel.getWidth() && position[0] >= 0)
+                && (position[1] < currentLevel.getHeight() && position[1] >= 0);
+    }
+
+    private void collisionOccurred(int[] position) {
+        Item possibleItem = currentLevel.getItemLayer().getItemAt(position[0], position[1]);
+        if (possibleItem.getType() != ItemType.NOTHING) {
+            inventory.add(possibleItem);
+            currentLevel.getItemLayer().removeItem(position[0], position[1]);
+            if(possibleItem.getType() == ItemType.CHIP) {
+                chipCount++;
             }
         }
     }
