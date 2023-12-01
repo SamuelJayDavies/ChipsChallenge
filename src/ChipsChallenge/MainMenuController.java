@@ -49,5 +49,6 @@ public class MainMenuController extends Application {
         stage.setTitle("Jurassic Marsh");
         stage.setScene(scene);
         stage.show();
+        GameController.stage = stage;
     }
 }
