@@ -57,7 +57,7 @@ public class ActorLayer {
         return actors;
     }
 
-    private boolean validPosition(int x, int y) {
+    boolean validPosition(int x, int y) {
         return x >= 0 && x < actors.length && y < actors[0].length;
     }
 
