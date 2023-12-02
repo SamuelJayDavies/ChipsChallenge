@@ -79,6 +79,10 @@ public class TileLayer {
         return null;
     }
 
+    public void setTileAt(int x, int y, Tile newTile) {
+        tiles[y][x] = newTile;
+    }
+
     public Tile[][] getTiles() {
         return tiles;
     }
