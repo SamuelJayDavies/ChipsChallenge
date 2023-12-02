@@ -4,8 +4,10 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -26,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameController extends Application {
+
+    @FXML
+    public static Stage stage;
 
     @FXML
     private Canvas mainCanvas;
@@ -155,7 +160,7 @@ public class GameController extends Application {
             }
         }
         chipNumber.setText("Chips: " + chipCount);
-        timeLbl.setText("Time: " + currentTime);
+        timeLbl.setText("Time: " + Math.ceil(currentTime));
     }
 
     @FXML
@@ -167,18 +172,29 @@ public class GameController extends Application {
     }
 
     public void tick() {
-        Player currentPlayer = currentLevel.getActorLayer().getPlayer();
-        if(nextMove == KeyCode.W || nextMove == KeyCode.A
-                || nextMove == KeyCode.S || nextMove == KeyCode.D) {
-            int[] newPosition = getNewPosition(currentPlayer.getX(), currentPlayer.getY());
-            if(isValidMove(newPosition)) {
-                currentLevel.getActorLayer().updateActor(currentPlayer, newPosition[0], newPosition[1]);
-                collisionOccurred(newPosition);
-            }
-        }
+        // Put this into player method
+        movePlayer();
         currentTime = currentTime - 0.5;
         nextMove = null;
         drawGame();
+    }
+
+    private void movePlayer() {
+        Player currentPlayer = currentLevel.getActorLayer().getPlayer();
+        if(nextMove == KeyCode.W || nextMove == KeyCode.A
+                || nextMove == KeyCode.S || nextMove == KeyCode.D) {
+            int[] originalPosition = new int[]{currentPlayer.getX(), currentPlayer.getY()};
+            int[] nextPosition = getNewPosition(originalPosition[0], originalPosition[1]);
+            if(isValidMove(nextPosition)) {
+                int[] finalPosition = collisionOccurredTile(nextPosition, originalPosition, checkForTileCollision(nextPosition));
+                currentLevel.getActorLayer().updateActor(currentPlayer, finalPosition[0], finalPosition[1]);
+                collisionOccurredItem(nextPosition);
+                // Move this somewhere nicer later
+                if (currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType() == TileType.DIRT) {
+                    currentLevel.getTileLayer().setTileAt(originalPosition[0], originalPosition[1], new Path());
+                }
+            }
+        }
     }
 
     private int[] getNewPosition(int x, int y) {
@@ -201,7 +217,73 @@ public class GameController extends Application {
                 && (position[1] < currentLevel.getHeight() && position[1] >= 0);
     }
 
-    private void collisionOccurred(int[] position) {
+    private TileType checkForTileCollision(int[] position) {
+        Tile currentTile = currentLevel.getTileLayer().getTileAt(position[0], position[1]);
+        return currentTile.getType();
+    }
+
+    private int[] collisionOccurredTile(int[] position, int[] originalPosition, TileType tileType) {
+        switch (tileType) {
+            case WALL:
+                return originalPosition;
+            case ICE, ICEBL, ICEBR, ICETL, ICETR:
+                nextMove = convertIceDirection(nextMove, tileType);
+                int[] newerPosition = getNewPosition(position[0], position[1]);
+                collisionOccurredItem(position); // Bit of code repetition here
+                // Make this nicer later
+                return collisionOccurredTile(newerPosition, originalPosition, checkForTileCollision(newerPosition));
+            case WATER:
+                try {
+                    switchToMainMenu(new ActionEvent());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            default:
+                return position;
+        }
+    }
+
+    // This can be made far nicer by having the directions being in a set order, then you can just offset the ordering
+    // based on the ice direction
+    private KeyCode convertIceDirection(KeyCode currentDirection, TileType tileType) {
+        if (tileType != TileType.ICE) {
+            switch (currentDirection) {
+                case D:
+                    if (tileType.equals(TileType.ICETR)) {
+                        return KeyCode.S;
+                    } else if (tileType.equals(TileType.ICEBR)) {
+                        return KeyCode.W;
+                    }
+                    break;
+                case A:
+                    if (tileType.equals(TileType.ICETL)) {
+                        return KeyCode.S;
+                    } else if (tileType.equals(TileType.ICEBL)) {
+                        return KeyCode.W;
+                    }
+                    break;
+                case W:
+                    if (tileType.equals(TileType.ICETR)) {
+                        return KeyCode.A;
+                    } else if (tileType.equals(TileType.ICETL)) {
+                        return KeyCode.D;
+                    }
+                    break;
+                case S:
+                    if (tileType.equals(TileType.ICEBR)) {
+                        return KeyCode.A;
+                    } else if (tileType.equals(TileType.ICEBL)) {
+                        return KeyCode.D;
+                    }
+                    break;
+                default:
+                    return currentDirection;
+            }
+        }
+        return currentDirection;
+    }
+
+    private void collisionOccurredItem(int[] position) {
         Item possibleItem = currentLevel.getItemLayer().getItemAt(position[0], position[1]);
         if (possibleItem.getType() != ItemType.NOTHING) {
             inventory.add(possibleItem);
@@ -210,6 +292,16 @@ public class GameController extends Application {
                 chipCount++;
             }
         }
+    }
+
+    public void switchToMainMenu(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/main-menu.fxml"));
+
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setTitle("Main Menu");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public static void main(String[] args) {

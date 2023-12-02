@@ -58,7 +58,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="BOTTOM_RIGHT" prefHeight="84.0" prefWidth="314.0">
+            <HBox alignment="BOTTOM_RIGHT" prefHeight="69.0" prefWidth="448.0">
                <children>
                   <Label fx:id="timeLbl" alignment="TOP_RIGHT" contentDisplay="BOTTOM" text="Time: 120" textFill="WHITE">
                      <font>
