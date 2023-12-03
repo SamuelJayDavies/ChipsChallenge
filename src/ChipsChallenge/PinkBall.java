@@ -1,39 +1,52 @@
 package ChipsChallenge;
 
 import javafx.scene.image.Image;
-import com.sun.javafx.scene.traversal.Direction;
 
 public class PinkBall extends Actor {
-
     private Direction direction;
 
     public PinkBall(int x, int y, Direction direction) {
-        super(x, y, ActorType.PINKBALL, new Image("path_to_pinkball_image")); // Replce  "path_to_pinkball_image" with the actual path
-        this.direction = direction;
-    }
-
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public void setDirection(Direction direction) {
+        super(ActorType.PINKBALL, new Image("null"), x, y);
         this.direction = direction;
     }
 
     @Override
     public void moveActor() {
-        // Implement the movement logic 
-        // Pink Ball should move in a straight line until it hits a blocking tile,
-        // then it should reverse its direction and travel backward.
-        // The actual logic depends on the game rules and how the tiles are represented.
-        // You may need to check the type of the tile in front of the Pink Ball and decide
-        // whether it's a blocking tile or not.
+        int nextX = calculateNextX();
+        int nextY = calculateNextY();
+
+        if (isValidTile(nextX, nextY)) {
+            setX(nextX);
+            setY(nextY);
+        } else {
+            reverseDirection();
+        }
+    }
+
+    private int calculateNextX() {
+        return getX() + (direction == Direction.RIGHT ? 1 : (direction == Direction.LEFT ? -1 : 0));
+    }
+
+    private int calculateNextY() {
+        return getY() + (direction == Direction.DOWN ? 1 : (direction == Direction.UP ? -1 : 0));
+    }
+
+    private boolean isValidTile(int x, int y) {
+        TileType tileType = getTileType(x, y);
+        return tileType == TileType.PATH || tileType == TileType.BUTTON || tileType == TileType.TRAP;
+    }
+
+    private TileType getTileType(int x, int y) {
+        
+        return gameMap[y][x];  // Asuming y represents the row and x represents the column
     }
 
     public void reverseDirection() {
-        // Implement the logic to reverse the direction of the Pink Ball
-        // This method is called when the pink ball hits a blocking tile.
-        // You need to change the direction accordingly.
+        direction = (direction == Direction.RIGHT) ? Direction.LEFT :
+                    (direction == Direction.LEFT) ? Direction.RIGHT :
+                    (direction == Direction.UP) ? Direction.DOWN :
+                    Direction.UP;
     }
 }
+
 
