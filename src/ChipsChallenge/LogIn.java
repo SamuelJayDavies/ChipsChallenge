@@ -154,6 +154,7 @@ public class LogIn extends Application {
     public void btnLogin2_Click(TextField txtNewUser) {//check if playername already exists ??
         String username = txtNewUser.getText();
         String fileName = "Users.txt";
+        Boolean found = false;
         try {//check if player exists
             File file = new File(fileName);
             Scanner in = new Scanner(file);
@@ -168,24 +169,25 @@ public class LogIn extends Application {
                     stage.setScene(sceneWelcome);
                     player = username;
                     level = playerLevel;
-                    break;
-                } else {
-                    try {// if player doesnt exist add a new player
-                        FileWriter fileWriter = new FileWriter(fileName,true);
-                        BufferedWriter info = new BufferedWriter(fileWriter);
-                        info.write(username + ",1");
-                        info.newLine();
-                        info.close();
-                        System.out.println("Successfully wrote to the file.");
-                    } catch (IOException e) {
-                        System.out.println("An error occurred.");
-                        e.printStackTrace();
-                    }
-                    player = username;
-                    level = 1;
-                    stage.setScene(sceneWelcome);
+                    found = true;
                     break;
                 }
+            }
+            if (found != true) {
+                try {// if player doesnt exist add a new player
+                    FileWriter fileWriter = new FileWriter(fileName, true);
+                    BufferedWriter info = new BufferedWriter(fileWriter);
+                    info.write(username + ",1");
+                    info.newLine();
+                    info.close();
+                    System.out.println("Successfully wrote to the file.");
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                player = username;
+                level = 1;
+                stage.setScene(sceneWelcome);
             }
             in.close();
         } catch (FileNotFoundException e) {
@@ -201,3 +203,4 @@ public class LogIn extends Application {
         launch(args);
     }
 }
+
