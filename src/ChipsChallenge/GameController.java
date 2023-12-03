@@ -189,6 +189,10 @@ public class GameController extends Application {
                 int[] finalPosition = collisionOccurredTile(nextPosition, originalPosition, checkForTileCollision(nextPosition));
                 currentLevel.getActorLayer().updateActor(currentPlayer, finalPosition[0], finalPosition[1]);
                 collisionOccurredItem(nextPosition);
+                // Move this somewhere nicer later
+                if (currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType() == TileType.DIRT) {
+                    currentLevel.getTileLayer().setTileAt(originalPosition[0], originalPosition[1], new Path());
+                }
             }
         }
     }
