@@ -80,10 +80,15 @@
             </HBox>
          </children>
       </HBox>
-      <AnchorPane layoutX="-1.0" layoutY="113.0" prefHeight="348.0" prefWidth="1000.0">
+      <AnchorPane layoutX="-1.0" layoutY="113.0" prefHeight="348.0" prefWidth="1000.0" style="-fx-border-color: black;">
          <children>
             <Canvas fx:id="mainCanvas" height="348.0" layoutX="86.0" layoutY="-1.0" width="784.0" />
          </children>
       </AnchorPane>
+      <HBox alignment="CENTER" layoutX="679.0" layoutY="477.0" prefHeight="50.0" prefWidth="200.0" style="-fx-border-color: black;">
+         <children>
+            <Canvas fx:id="inventoryCanvas" height="50.0" width="200.0" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
