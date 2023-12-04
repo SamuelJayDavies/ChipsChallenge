@@ -25,6 +25,7 @@ public class HighScore {
     }
     
     // Check if a new score from a user beats the current highscore.
+    // Also checks if the array already has 10 elements and removes the smallest element
     public void uploadNewScore(int score, String user){
         UserScore newUserScore = new UserScore(user, score);
         if (highScore.size() == 10 && highScore.get(9).score < score) {
