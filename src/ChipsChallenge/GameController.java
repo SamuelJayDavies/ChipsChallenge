@@ -71,6 +71,8 @@ public class GameController extends Application {
 
     private double currentTime = 120;
 
+    public static User currentUser;
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainMenuController.class.getResource("../fxml/game.fxml"));
@@ -100,23 +102,23 @@ public class GameController extends Application {
 
     @FXML
     public void testFileLoad()  {
-        File myFile = new File("src/levels/level2.txt");
+        File myFile = new File("src/levels/level" + currentUser.getHighestLevelNum() + ".txt");
         Scanner myReader = null;
         try {  // Change this to just throw fileNotFoundException and crash program
             myReader = new Scanner(myFile);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        String[] dimensionsArr = splitFile(myReader)[0].split(",");
+        String[] dimensionsArr = splitFile(myReader ,1)[0].split(",");
         String[][] layers = new String[3][1];
         for(int i=0; i<3; i++) {
-            layers[i] = splitFile(myReader);
+            layers[i] = splitFile(myReader, Integer.parseInt(dimensionsArr[1]));
         }
         this.currentLevel = new Level(Integer.parseInt(dimensionsArr[0]), Integer.parseInt(dimensionsArr[1]), layers);
     }
 
-    private String[] splitFile(Scanner levelFile) {
-        String[] tileArr = new String[7];
+    private String[] splitFile(Scanner levelFile, int height) {
+        String[] tileArr = new String[height];
         boolean layerFinished = false;
         int i = 0;
         while(!layerFinished) {

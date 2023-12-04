@@ -1,5 +1,6 @@
 package ChipsChallenge;
 
+import com.sun.javafx.scene.traversal.Direction;
 import javafx.scene.image.Image;
 
 //me and ano will make more changes to the code we're just checking if everything is correct
@@ -9,7 +10,6 @@ public class Block extends Actor {
         super(ActorType.BLOCK, new Image("images/stuff/block.png"));
     }
 
-    @Override
     public void moveActor(Direction direction, Level level) {
         int nextX = getX();
         int nextY = getY();
@@ -29,7 +29,8 @@ public class Block extends Actor {
                 nextX++;
                 break;
         }
-
+    }
+/*
         // Check if the next position is valid (e.g., within the level boundaries and not blocked by other actors)
         if (isValidMove(nextX, nextY, level)) {
             // Update the position
@@ -37,7 +38,7 @@ public class Block extends Actor {
             setY(nextY);
         }
     }
-
+    /*
     private boolean isValidMove(int x, int y, Level level) {
         // Check if the position is within the level boundaries
         if (x < 0 || x >= level.getWidth() || y < 0 || y >= level.getHeight()) {
@@ -51,7 +52,7 @@ public class Block extends Actor {
 
             /*public boolean isBlocking() {
         return true; // By default, actors are blocking
-    } */
+    }
             // If the next position is water, sink the block and replace it with a path
             if (actorAtNextPosition instanceof Water) {
                 // Replace the block with a path at the current position
@@ -66,4 +67,6 @@ public class Block extends Actor {
         }
         return false; // Move is not valid
     }
+
+     */
 }

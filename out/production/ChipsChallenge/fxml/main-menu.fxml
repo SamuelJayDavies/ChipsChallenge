@@ -16,16 +16,41 @@
          <children>
             <Pane prefHeight="190.0" prefWidth="600.0">
                <children>
-                  <Label fx:id="titleName" layoutX="300.0" layoutY="14.0" text="Chips Challenge">
+                  <Label fx:id="titleName1" layoutX="403.0" text="CaveQuest">
                      <font>
                         <Font name="System Bold" size="38.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="titleName" layoutX="399.0" text="CaveQuest" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="38.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="titleName11" layoutX="163.0" layoutY="118.0" text="Are You Ready?">
+                     <font>
+                        <Font name="System Bold" size="38.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="titleName2" layoutX="158.0" layoutY="118.0" text="Are You Ready?" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="38.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="titleName111" layoutX="226.0" layoutY="165.0" text="Type in your name to begin">
+                     <font>
+                        <Font name="System Bold" size="11.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="titleName21" layoutX="224.0" layoutY="165.0" text="Type in your name to begin" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="11.0" />
                      </font>
                   </Label>
                </children>
             </Pane>
             <HBox alignment="CENTER" prefHeight="45.0" prefWidth="600.0">
                <children>
-                  <TextField promptText="Username">
+                  <TextField fx:id="inputBox" promptText="Username">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
@@ -35,7 +60,7 @@
             <Pane prefHeight="27.0" prefWidth="600.0" />
             <HBox alignment="CENTER" prefHeight="91.0" prefWidth="600.0">
                <children>
-                  <Button fx:id="beginBtn" mnemonicParsing="false" onAction="#switchToGame" text="Begin" />
+                  <Button fx:id="beginBtn" mnemonicParsing="false" onAction="#logIn" text="Begin" />
                </children>
             </HBox>
             <HBox alignment="BOTTOM_RIGHT" prefHeight="65.0" prefWidth="600.0">

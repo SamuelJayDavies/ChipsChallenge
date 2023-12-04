@@ -1,16 +1,16 @@
 package ChipsChallenge;
 
 import javafx.scene.image.Image;
+import com.sun.javafx.scene.traversal.Direction;
 
 public class PinkBall extends Actor {
     private Direction direction;
 
     public PinkBall(int x, int y, Direction direction) {
-        super(ActorType.PINKBALL, new Image("null"), x, y);
+        super(ActorType.PINKBALL, new Image("null"));//, x, y);
         this.direction = direction;
     }
 
-    @Override
     public void moveActor() {
         int nextX = calculateNextX();
         int nextY = calculateNextY();
@@ -37,8 +37,8 @@ public class PinkBall extends Actor {
     }
 
     private TileType getTileType(int x, int y) {
-        
-        return gameMap[y][x];  // Asuming y represents the row and x represents the column
+        return null;
+        //return gameMap[y][x];  // Asuming y represents the row and x represents the column
     }
 
     public void reverseDirection() {

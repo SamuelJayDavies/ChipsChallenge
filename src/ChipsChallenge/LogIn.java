@@ -16,6 +16,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class LogIn extends Application {
@@ -193,6 +194,46 @@ public class LogIn extends Application {
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + fileName);
         }
+    }
+
+    public static User logInUser(String userName) {
+        String fileName = "Users.txt";
+        boolean found = false;
+        try {//check if player exists
+            File file = new File(fileName);
+            Scanner in = new Scanner(file);
+
+            while (in.hasNextLine() && !found) {
+                String line = in.nextLine();
+                String[] parts = line.split(",");
+                String name = parts[0];
+                int playerLevel = Integer.parseInt(parts[1]);
+                if (userName.equals(name)) {
+                    System.out.println("Name found! Level: " + playerLevel);
+                    in.close();
+                    return new User(name, playerLevel);
+                }
+            }
+            if (!found && !Objects.equals(userName, "")) {
+                try {// if player doesnt exist add a new player
+                    FileWriter fileWriter = new FileWriter(fileName, true);
+                    BufferedWriter info = new BufferedWriter(fileWriter);
+                    info.write(userName + ",1");
+                    info.newLine();
+                    info.close();
+                    System.out.println("Successfully wrote to the file.");
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                in.close();
+                return new User(userName, 1);
+            }
+            in.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + fileName);
+        }
+        return null;
     }
 
     public void btnAddPlayer_Click() {

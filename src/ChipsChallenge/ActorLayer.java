@@ -40,7 +40,7 @@ public class ActorLayer {
             case "f":
                 return new Frog();
             case "pb":
-                return new PinkBall();
+                //return new PinkBall();
             default:
                 return null;
         }
