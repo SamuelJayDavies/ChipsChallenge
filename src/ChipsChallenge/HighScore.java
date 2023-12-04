@@ -25,13 +25,19 @@ public class HighScore {
     }
     
     // Check if a new score from a user beats the current highscore.
+    // Also checks if the array already has 10 elements and removes the smallest element
     public void uploadNewScore(int score, String user){
         UserScore newUserScore = new UserScore(user, score);
-        int i = 0;
-        while (i < highScore.size() && highScore.get(i).score > score) {
-            i++;
+        if (highScore.size() == 10 && highScore.get(9).score < score) {
+            highScore.remove(9);
         }
-        highScore.add(i, newUserScore);
+        if (highScore.size() < 10) {
+            int i = 0;
+            while (i < highScore.size() && highScore.get(i).score > score) {
+                i++;
+            }
+            highScore.add(i, newUserScore);
+        }
     }
 
     // Return the entire scoreboard as an array of objects, storing the username and score.
