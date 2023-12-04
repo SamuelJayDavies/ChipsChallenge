@@ -36,6 +36,9 @@ public class GameController extends Application {
     private Canvas mainCanvas;
 
     @FXML
+    private Canvas inventoryCanvas;
+
+    @FXML
     private HBox levelNameBox;
 
     @FXML
@@ -65,7 +68,7 @@ public class GameController extends Application {
 
     private KeyCode nextMove;
 
-    private ArrayList<Item> inventory; // should probably move this
+    private ArrayList<Key> inventory; // should probably move this
 
     private int chipCount = 0;
 
@@ -90,6 +93,7 @@ public class GameController extends Application {
         inventory = new ArrayList<>();
         testFileLoad();
         drawGame();
+        drawInventory();
         tickTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> tick()));
         tickTimeline.setCycleCount(Animation.INDEFINITE);
         tickTimeline.play();
@@ -240,6 +244,15 @@ public class GameController extends Application {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            case DOOR:
+                Door currentDoor = (Door) currentLevel.getTileLayer().getTileAt(position[0], position[1]);
+                for(Key key : inventory) {
+                    if(key.getColour() == currentDoor.getColour()) {
+                        currentLevel.getTileLayer().setTileAt(position[0], position[1], new Path());
+                        return position;
+                    }
+                }
+                return originalPosition;
             default:
                 return position;
         }
@@ -288,11 +301,27 @@ public class GameController extends Application {
     private void collisionOccurredItem(int[] position) {
         Item possibleItem = currentLevel.getItemLayer().getItemAt(position[0], position[1]);
         if (possibleItem.getType() != ItemType.NOTHING) {
-            inventory.add(possibleItem);
             currentLevel.getItemLayer().removeItem(position[0], position[1]);
             if(possibleItem.getType() == ItemType.CHIP) {
                 chipCount++;
+            } else {
+                inventory.add((Key) possibleItem);
+                drawInventory();
             }
+        }
+    }
+
+    @FXML
+    private void drawInventory() {
+        GraphicsContext inventoryGc = inventoryCanvas.getGraphicsContext2D();
+        inventoryGc.clearRect(0, 0, inventoryCanvas.getWidth(), inventoryCanvas.getHeight());
+        Image pathImg = new Path().getImage();
+        for(int i=0; i<4; i++) {
+            inventoryGc.drawImage(pathImg, i*50, 0);
+        }
+        for(int i=0; i<inventory.size(); i++) {
+            inventoryGc.drawImage(inventory.get(i).getImage(), i* 50, 0);
+            System.out.println(inventory.get(i).getType());
         }
     }
 

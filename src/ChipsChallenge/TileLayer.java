@@ -65,7 +65,7 @@ public class TileLayer {
                 if(type.charAt(0) == 'c' && type.charAt(1) == 's') {
                     return new ChipSocket();
                 } else if(type.charAt(0) == 'd') {
-                    return new Door(Colour.RED);
+                    return new Door(type.charAt(1));
                 } else {
                     return null;
                 }
