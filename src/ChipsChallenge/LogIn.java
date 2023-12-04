@@ -15,9 +15,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
+
 public class LogIn extends Application {
     String player;
     int level;
@@ -84,7 +84,7 @@ public class LogIn extends Application {
         txtNewUser.setPromptText("Enter player name here");
 
         // Create the log in and sign up buttons
-        Button btnLogin2 = new Button("Log in");
+        Button btnLogin2 = new Button("Add player");
         btnLogin2.setPrefWidth(80);
         btnLogin2.setOnAction(e -> btnLogin2_Click(txtNewUser));
         HBox paneButtons2 = new HBox(10, btnLogin2);
@@ -123,28 +123,76 @@ public class LogIn extends Application {
     }
 
 
-    public void btnLogin_Click(TextField txtUsername) { //get level for player??
-        player = txtUsername.getText();
-        stage.setScene(sceneWelcome);
+    public void btnLogin_Click(TextField txtUsername) {
+        String username = txtUsername.getText();
+        String fileName = "Users.txt";
+        try {
+            File file = new File(fileName);
+            Scanner in = new Scanner(file);
+
+            while (in.hasNextLine()) {
+                String line = in.nextLine();
+                String[] parts = line.split(",");
+                String name = parts[0];
+                int playerLevel = Integer.parseInt(parts[1]);
+                if (username.equals(name)) {
+                    System.out.println("Name found! Level: " + playerLevel);
+                    stage.setScene(sceneWelcome);
+                    player = username;
+                    level = playerLevel;
+                    break;
+                } else {
+                    stage.setScene(sceneAddPlayer);
+                }
+            }
+            in.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + fileName);
+        }
     }
 
     public void btnLogin2_Click(TextField txtNewUser) {//check if playername already exists ??
         String username = txtNewUser.getText();
         String fileName = "Users.txt";
-        try {
-            FileWriter fileWriter = new FileWriter(fileName,true);
-            BufferedWriter info = new BufferedWriter(fileWriter);
-            info.write(username + ",1");
-            info.newLine();
-            info.close();
-            System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+        Boolean found = false;
+        try {//check if player exists
+            File file = new File(fileName);
+            Scanner in = new Scanner(file);
+
+            while (in.hasNextLine()) {
+                String line = in.nextLine();
+                String[] parts = line.split(",");
+                String name = parts[0];
+                int playerLevel = Integer.parseInt(parts[1]);
+                if (username.equals(name)) {
+                    System.out.println("Name found! Level: " + playerLevel);
+                    stage.setScene(sceneWelcome);
+                    player = username;
+                    level = playerLevel;
+                    found = true;
+                    break;
+                }
+            }
+            if (found != true) {
+                try {// if player doesnt exist add a new player
+                    FileWriter fileWriter = new FileWriter(fileName, true);
+                    BufferedWriter info = new BufferedWriter(fileWriter);
+                    info.write(username + ",1");
+                    info.newLine();
+                    info.close();
+                    System.out.println("Successfully wrote to the file.");
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                player = username;
+                level = 1;
+                stage.setScene(sceneWelcome);
+            }
+            in.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + fileName);
         }
-        player = username;
-        level = 1;
-        stage.setScene(sceneWelcome);
     }
 
     public void btnAddPlayer_Click() {
@@ -155,3 +203,4 @@ public class LogIn extends Application {
         launch(args);
     }
 }
+
