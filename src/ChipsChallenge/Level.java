@@ -22,17 +22,18 @@ public class Level {
         this.itemLayer = new ItemLayer(width, height, layers[1]);
         this.actorLayer = new ActorLayer(width, height, layers[2]);
 
-        /*
         int j=0;
         for (String row: layers[3]) {
             String[] currentTiles = row.split(","); // Should probably have this in game controller or a
-            for (int i=0; i<tileLayer.getTiles().length; i++) {              // specialised file
-                //tileLayer.get[j][i] = identifyTile(currentTiles[i]);
+            for (int i=0; i<tileLayer.getTiles().length; i++) {
+                if(!currentTiles[i].equals("n")) {
+                    String[] interactionCoords = currentTiles[i].split(":");
+                    tileLayer.updateTile(tileLayer.getTileAt(i, j), Integer.parseInt(interactionCoords[0]),
+                            Integer.parseInt(interactionCoords[1]));
+                }
             }
             j++;
         }
-
-         */
     }
 
     public int getWidth() {

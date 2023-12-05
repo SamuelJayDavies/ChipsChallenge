@@ -114,8 +114,8 @@ public class GameController extends Application {
             throw new RuntimeException(e);
         }
         String[] dimensionsArr = splitFile(myReader ,1)[0].split(",");
-        String[][] layers = new String[3][1];
-        for(int i=0; i<3; i++) {
+        String[][] layers = new String[4][1];
+        for(int i=0; i<4; i++) {
             layers[i] = splitFile(myReader, Integer.parseInt(dimensionsArr[1]));
         }
         this.currentLevel = new Level(Integer.parseInt(dimensionsArr[0]), Integer.parseInt(dimensionsArr[1]), layers);
@@ -191,13 +191,25 @@ public class GameController extends Application {
                 || nextMove == KeyCode.S || nextMove == KeyCode.D) {
             int[] originalPosition = new int[]{currentPlayer.getX(), currentPlayer.getY()};
             int[] nextPosition = getNewPosition(originalPosition[0], originalPosition[1]);
+            Tile possibleTrap = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]);
+            if(possibleTrap.getType() == TileType.TRAP) {
+                Trap foundTrap = (Trap) possibleTrap;
+                if (foundTrap.isActive()) {
+                    return;
+                }
+            }
             if(isValidMove(nextPosition)) {
                 int[] finalPosition = collisionOccurredTile(nextPosition, originalPosition, checkForTileCollision(nextPosition));
                 currentLevel.getActorLayer().updateActor(currentPlayer, finalPosition[0], finalPosition[1]);
                 collisionOccurredItem(nextPosition);
                 // Move this somewhere nicer later
-                if (currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType() == TileType.DIRT) {
+                TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
+                if (lastTileType == TileType.DIRT) {
                     currentLevel.getTileLayer().setTileAt(originalPosition[0], originalPosition[1], new Path());
+                } else if (lastTileType == TileType.BUTTON) {
+                    ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
+                            getTileAt(originalPosition[0], originalPosition[1]);
+                    previousButton.getLinkedTrap().setActive(false);
                 }
             }
         }
@@ -253,6 +265,19 @@ public class GameController extends Application {
                     }
                 }
                 return originalPosition;
+            case CHIPSOCKET:
+                ChipSocket chipSocket = (ChipSocket) currentLevel.getTileLayer().getTileAt(position[0], position[1]);
+                if (chipCount >= chipSocket.getChipsRequired()) {
+                    this.chipCount = chipCount - chipSocket.getChipsRequired();
+                    currentLevel.getTileLayer().setTileAt(position[0], position[1], new Path());
+                    return position;
+                }
+                return originalPosition;
+            case BUTTON:
+                ChipsChallenge.Button currentButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
+                        getTileAt(position[0], position[1]);
+                currentButton.getLinkedTrap().setActive(true);
+                return position;
             default:
                 return position;
         }

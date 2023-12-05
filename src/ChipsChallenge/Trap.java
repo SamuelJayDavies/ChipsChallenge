@@ -28,4 +28,10 @@ public class Trap extends Tile {
     public void setLinkedButton(Button linkedButton) {
         this.linkedButton = linkedButton;
     }
+
+    @Override
+    public Image getImage() {
+        // Fix this later, should just reference own image
+        return active ? new Image("images/stuff/trap v2.png") : new Image("images/stuff/path.png");
+    }
 }

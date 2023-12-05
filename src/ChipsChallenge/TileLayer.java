@@ -63,7 +63,7 @@ public class TileLayer {
                 return new Tile(TileType.ICEBL, new Image("images/stuff/iceBL.png"));
             default:
                 if(type.charAt(0) == 'c' && type.charAt(1) == 's') {
-                    return new ChipSocket();
+                    return new ChipSocket(Integer.parseInt(type.substring(2)));
                 } else if(type.charAt(0) == 'd') {
                     return new Door(type.charAt(1));
                 } else {
@@ -89,5 +89,15 @@ public class TileLayer {
 
     private boolean isValidCoordinate(int x, int y) {
         return x >= 0 && x < tiles[0].length && y >= 0 && y < tiles.length;
+    }
+
+    public void updateTile(Tile currentTile, int x, int y) {
+        if(currentTile.getType() == TileType.BUTTON) {
+            // We can use typecasting here because we know their type
+            Button currentButton = (Button) currentTile;
+            Trap currentTrap = (Trap) getTileAt(x, y);
+            currentButton.setLinkedTrap(currentTrap);
+            currentTrap.setLinkedButton(currentButton);
+        }
     }
 }
