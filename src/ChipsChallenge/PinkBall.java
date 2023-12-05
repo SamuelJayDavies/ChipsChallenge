@@ -2,15 +2,45 @@ package ChipsChallenge;
 
 import javafx.scene.image.Image;
 import com.sun.javafx.scene.traversal.Direction;
+import javafx.scene.input.KeyCode;
+
+import java.util.Objects;
 
 public class PinkBall extends Actor {
-    private Direction direction;
+    private KeyCode direction;
 
-    public PinkBall(int x, int y, Direction direction) {
-        super(ActorType.PINKBALL, new Image("null"));//, x, y);
-        this.direction = direction;
+    public PinkBall() {
+        super(ActorType.PINKBALL, new Image("images/stuff/pink ball.png"));//, x, y);
+        direction = KeyCode.D;
     }
 
+    public void setDirection(String direction) {
+        switch(direction) {
+            case "up":
+                this.direction = KeyCode.W;
+                break;
+            case "down":
+                this.direction = KeyCode.S;
+                break;
+            case "left":
+                this.direction = KeyCode.A;
+                break;
+            case "right":
+                this.direction = KeyCode.D;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public KeyCode getDirection() {
+        return this.direction;
+    }
+
+    public void setDirection(KeyCode direction) {
+        this.direction = direction;
+    }
+    /*
     public void moveActor() {
         int nextX = calculateNextX();
         int nextY = calculateNextY();
@@ -40,13 +70,14 @@ public class PinkBall extends Actor {
         return null;
         //return gameMap[y][x];  // Asuming y represents the row and x represents the column
     }
-
+    */
     public void reverseDirection() {
-        direction = (direction == Direction.RIGHT) ? Direction.LEFT :
-                    (direction == Direction.LEFT) ? Direction.RIGHT :
-                    (direction == Direction.UP) ? Direction.DOWN :
-                    Direction.UP;
+        direction = (direction == KeyCode.D) ? KeyCode.A :
+                    (direction == KeyCode.A) ? KeyCode.D :
+                    (direction == KeyCode.W) ? KeyCode.S :
+                    KeyCode.W;
     }
+
 }
 
 

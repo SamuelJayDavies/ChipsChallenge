@@ -1,5 +1,6 @@
 package ChipsChallenge;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ActorLayer {
@@ -8,8 +9,11 @@ public class ActorLayer {
 
     private Player mainPlayer;
 
+    private ArrayList<Actor> monsters;
+
     public ActorLayer(int width, int height, String[] actorArr) {
         actors = new Actor[height][width];
+        monsters = new ArrayList<>();
         initialiseItems(actorArr);
     }
 
@@ -36,11 +40,17 @@ public class ActorLayer {
             case "bl":
                 return new Block();
             case "b":
-                return new Bug();
+                Bug bug = new Bug();
+                monsters.add(bug);
+                return bug;
             case "f":
-                return new Frog();
+                Frog frog = new Frog();
+                monsters.add(frog);
+                return frog;
             case "pb":
-                //return new PinkBall();
+                PinkBall ball = new PinkBall();
+                monsters.add(ball);
+                return ball;
             default:
                 return null;
         }
@@ -67,6 +77,10 @@ public class ActorLayer {
 
     public Player getPlayer() {
         return this.mainPlayer;
+    }
+
+    public ArrayList<Actor> getMonsters() {
+        return monsters;
     }
 
     public void updateActor(Actor actor, int x, int y) {
