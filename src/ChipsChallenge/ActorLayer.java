@@ -48,7 +48,7 @@ public class ActorLayer {
 
     public Actor getActor(int x, int y) {
         if(validPosition(x,y)) {
-            return actors[x][y];
+            return actors[y][x];
         }
         return null;
     }
@@ -57,8 +57,12 @@ public class ActorLayer {
         return actors;
     }
 
+    public void setActor(int x, int y, Actor newActor) {
+        actors[y][x] = newActor;
+    }
+
     boolean validPosition(int x, int y) {
-        return x >= 0 && x < actors.length && y < actors[0].length;
+        return x >= 0 && x < actors[0].length && y < actors.length;
     }
 
     public Player getPlayer() {

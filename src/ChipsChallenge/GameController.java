@@ -94,7 +94,7 @@ public class GameController extends Application {
         testFileLoad();
         drawGame();
         drawInventory();
-        tickTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> tick()));
+        tickTimeline = new Timeline(new KeyFrame(Duration.millis(250), event -> tick()));
         tickTimeline.setCycleCount(Animation.INDEFINITE);
         tickTimeline.play();
     }
@@ -199,7 +199,11 @@ public class GameController extends Application {
                 }
             }
             if(isValidMove(nextPosition)) {
-                int[] finalPosition = collisionOccurredTile(nextPosition, originalPosition, checkForTileCollision(nextPosition));
+                // Check for tile interactions
+                int[] finalPosition = collisionOccurredTile(nextPosition, originalPosition,
+                        checkForTileCollision(nextPosition), currentPlayer.getType());
+                // Check for actor interaction
+                finalPosition = collisionOccuredActor(finalPosition, originalPosition, checkForActorCollision(finalPosition));
                 currentLevel.getActorLayer().updateActor(currentPlayer, finalPosition[0], finalPosition[1]);
                 collisionOccurredItem(nextPosition);
                 // Move this somewhere nicer later
@@ -240,37 +244,109 @@ public class GameController extends Application {
         return currentTile.getType();
     }
 
-    private int[] collisionOccurredTile(int[] position, int[] originalPosition, TileType tileType) {
-        switch (tileType) {
-            case WALL:
-                return originalPosition;
-            case ICE, ICEBL, ICEBR, ICETL, ICETR:
-                nextMove = convertIceDirection(nextMove, tileType);
-                int[] newerPosition = getNewPosition(position[0], position[1]);
-                collisionOccurredItem(position); // Bit of code repetition here
-                // Make this nicer later
-                return collisionOccurredTile(newerPosition, originalPosition, checkForTileCollision(newerPosition));
-            case WATER:
+    private ActorType checkForActorCollision(int[] position) {
+        Actor currentActor = currentLevel.getActorLayer().getActor(position[0], position[1]);
+        return currentActor.getType();
+    }
+
+    private int[] collisionOccuredActor(int[] position, int[] originalPosition, ActorType actorType) {
+        switch (actorType) {
+            case BUG,PINKBALL,FROG:
                 try {
                     switchToMainMenu(new ActionEvent());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            case BLOCK:
+                int[] blockNextMove = getNewPosition(position[0], position[1]);
+                if(isValidMove(blockNextMove)) {
+                    int[] finalPosition = collisionOccurredTile(blockNextMove, position, checkForTileCollision(blockNextMove), actorType);
+                    TileType blockNextTileType = currentLevel.getTileLayer().getTileAt(blockNextMove[0], blockNextMove[1]).getType();
+                    switch(blockNextTileType) {
+                        case PATH, DIRT, ICE, ICEBL, ICEBR, ICETL, ICETR,BUTTON:
+                            // If the moving block is now on-top of the player
+                            if(finalPosition == position) {
+                                try {
+                                    switchToMainMenu(new ActionEvent());
+                                    // Big problem here, game logic is continuing when game should be finished
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } else {
+                                currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(position[0], position[1]),
+                                        finalPosition[0], finalPosition[1]);
+                            }
+                            return position;
+                        case WALL,CHIPSOCKET,DOOR:
+                            return originalPosition;
+                        case TRAP:
+                            Trap currentTrap = (Trap) currentLevel.getTileLayer().getTileAt(blockNextMove[0], blockNextMove[1]);
+                            if (currentTrap.isActive()) {
+                                return originalPosition;
+                            } else {
+                                currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(position[0], position[1]),
+                                        finalPosition[0], finalPosition[1]);
+                                return position;
+                            }
+                        case WATER:
+                            // Replace next position with path and remove block from actor layer
+                            currentLevel.getTileLayer().setTileAt(finalPosition[0], finalPosition[1], new Path());
+                            currentLevel.getActorLayer().setActor(position[0], position[1], new NoActor());
+                            // Return next move for Player as they should now be next to where the block was placed
+                            return position;
+                    }
+                }
+                return originalPosition;
+            default:
+                return position; // No Actor
+        }
+    }
+
+    private int[] collisionOccurredTile(int[] position, int[] originalPosition, TileType tileType, ActorType actorType) {
+        switch (tileType) {
+            case WALL:
+                return originalPosition;
+            case ICE, ICEBL, ICEBR, ICETL, ICETR:
+                if(actorType == ActorType.PLAYER || actorType == ActorType.BLOCK) {
+                    nextMove = convertIceDirection(nextMove, tileType);
+                    int[] newerPosition = getNewPosition(position[0], position[1]);
+                    collisionOccurredItem(position); // Bit of code repetition here
+                    // Make this nicer later
+                    return collisionOccurredTile(newerPosition, originalPosition, checkForTileCollision(newerPosition), actorType);
+                } else {
+                    return originalPosition;
+                }
+            case WATER:
+                if(actorType == ActorType.PLAYER) {
+                    try {
+                        switchToMainMenu(new ActionEvent());
+                        // Big problem here, game logic is continuing when game should be finished
+                        return originalPosition;
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else if(actorType == ActorType.BLOCK) {
+                    return position;
+                }
             case DOOR:
-                Door currentDoor = (Door) currentLevel.getTileLayer().getTileAt(position[0], position[1]);
-                for(Key key : inventory) {
-                    if(key.getColour() == currentDoor.getColour()) {
-                        currentLevel.getTileLayer().setTileAt(position[0], position[1], new Path());
-                        return position;
+                if(actorType == ActorType.PLAYER) {
+                    Door currentDoor = (Door) currentLevel.getTileLayer().getTileAt(position[0], position[1]);
+                    for(Key key : inventory) {
+                        if(key.getColour() == currentDoor.getColour()) {
+                            currentLevel.getTileLayer().setTileAt(position[0], position[1], new Path());
+                            return position;
+                        }
                     }
                 }
                 return originalPosition;
             case CHIPSOCKET:
-                ChipSocket chipSocket = (ChipSocket) currentLevel.getTileLayer().getTileAt(position[0], position[1]);
-                if (chipCount >= chipSocket.getChipsRequired()) {
-                    this.chipCount = chipCount - chipSocket.getChipsRequired();
-                    currentLevel.getTileLayer().setTileAt(position[0], position[1], new Path());
-                    return position;
+                if(actorType == ActorType.PLAYER) {
+                    ChipSocket chipSocket = (ChipSocket) currentLevel.getTileLayer().getTileAt(position[0], position[1]);
+                    if (chipCount >= chipSocket.getChipsRequired()) {
+                        this.chipCount = chipCount - chipSocket.getChipsRequired();
+                        currentLevel.getTileLayer().setTileAt(position[0], position[1], new Path());
+                        return position;
+                    }
                 }
                 return originalPosition;
             case BUTTON:
