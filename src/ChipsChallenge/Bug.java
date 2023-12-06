@@ -1,6 +1,7 @@
 package ChipsChallenge;
 
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 
 /**
  * The Bug class represents a type of monster in the game Chips Challenge.
@@ -10,7 +11,8 @@ import javafx.scene.image.Image;
 
 public class Bug extends Actor {
 
-    private boolean followEdge;
+    private KeyCode followDirection;
+    private KeyCode direction;
 
     /**
      * Constructs a new Bug instance.
@@ -19,82 +21,60 @@ public class Bug extends Actor {
      */
 
     public Bug() {
-        super(ActorType.BUG, new Image("null"));
-        this.followEdge = true;
+        super(ActorType.BUG, new Image("images/stuff/bug.png"));
+        this.followDirection = KeyCode.D;
+        this.direction = KeyCode.A;
     }
 
-    /**
-     * Moves the Bug in the game world based on its current direction.
-     * Updates the Bug's coordinates and may change its direction.
-     *
-     * @param actorLayer The layer containing all actors in the game.
-     */
-    public void move(ActorLayer actorLayer) {
-        int currentX = getX();
-        int currentY = getY();
+    public KeyCode getFollowDirection() {
+        return followDirection;
+    }
 
-        int nextX = currentX;
-        int nextY = currentY;
+    public void setFollowDirection(KeyCode followDirection) {
+        this.followDirection = followDirection;
+    }
 
-        if (followEdge) {
-            if (canMove(currentX, currentY - 1, actorLayer)) {
-                nextY = currentY - 1;
-            } else if (canMove(currentX + 1, currentY, actorLayer)) {
-                nextX = currentX + 1;
-                followEdge = false;
-            } else if (canMove(currentX, currentY + 1, actorLayer)) {
-                nextY = currentY + 1;
-                followEdge = false;
+    public KeyCode getDirection() {
+        return direction;
+    }
+
+    public void setDirection(KeyCode direction) {
+        this.direction = direction;
+    }
+
+    public void turnBug(int numberOfTimes) {
+        for(int i=0; i<numberOfTimes; i++) {
+            if(this.followDirection == KeyCode.A) {
+                switch(direction) {
+                    case A:
+                        this.direction = KeyCode.S;
+                        break;
+                    case W:
+                        this.direction = KeyCode.A;
+                        break;
+                    case D:
+                        this.direction = KeyCode.W;
+                        break;
+                    case S:
+                        this.direction = KeyCode.D;
+                        break;
+                }
             } else {
-                followEdge = false;
+                switch(direction) {
+                    case A:
+                        this.direction = KeyCode.W;
+                        break;
+                    case W:
+                        this.direction = KeyCode.D;
+                        break;
+                    case D:
+                        this.direction = KeyCode.S;
+                        break;
+                    case S:
+                        this.direction = KeyCode.A;
+                        break;
+                }
             }
-        } else {
-            if (canMove(currentX, currentY + 1, actorLayer)) {
-                nextY = currentY + 1;
-            } else if (canMove(currentX - 1, currentY, actorLayer)) {
-                nextX = currentX - 1;
-                followEdge = true;
-            } else if (canMove(currentX, currentY - 1, actorLayer)) {
-                nextY = currentY - 1;
-                followEdge = true;
-            } else {
-                followEdge = true;
-            }
         }
-        actorLayer.updateActor(this, nextX, nextY);
-    }
-
-    /**
-     * Checks whether the Bug can move to the specified coordinates.
-     * The Bug cannot move to positions occupied by blocking tiles, other Bugs, or out-of-bounds positions.
-     *
-     * @param newX        The x-coordinate of the target position.
-     * @param newY        The y-coordinate of the target position.
-     * @param actorLayer  The layer containing all actors in the game.
-     * @return True if the Bug can move to the target position, false otherwise.
-     */
-
-    private boolean canMove(int newX, int newY, ActorLayer actorLayer) {
-        if (!actorLayer.validPosition(newX, newY)) {
-            return false;
-        }
-
-        Actor newActor = actorLayer.getActor(newX, newY);
-        if (newActor != null && newActor.getType() == ActorType.BLOCK) {
-            return false;
-        }
-
-        if (newActor != null && newActor.getType() == ActorType.BUG) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Updates the Bug's direction based on specific rules or conditions.
-     * This method may be called during the game to change the Bug's movement behavior.
-     */
-    public void updateDirection() {
-
     }
 }

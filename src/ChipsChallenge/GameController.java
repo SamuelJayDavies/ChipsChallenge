@@ -288,14 +288,59 @@ public class GameController extends Application {
                     // Pink ball doesn't move
                     currentMonster.reverseDirection();
                 }
+            } else if(monster.getType() == ActorType.BUG) {
+                Bug currentMonster = (Bug) monster;
+                int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
+                int[] bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                currentMonster.turnBug(1);
+                int[] finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
+                // Not sure if it's a problem but when a bug is left in open space 4x4 he will just circle around himself
+                // This is technically how he is expected to act though
+                // Nice feature would be to check his position after certain amount of game ticks, if he is in the same position
+                // Make him move forward or backwards next turn instead of turn his desired direction
+                if(finalPosition == originalPosition) {
+                    currentMonster.turnBug(3);
+                    finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
+                    if(finalPosition == originalPosition) {
+                        currentMonster.turnBug(2);
+                        finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
+                        if(finalPosition == originalPosition) {
+                            currentMonster.turnBug(1);
+                            finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
+                            if(finalPosition == originalPosition) {
+                                // Don't Move
+                                return;
+                            }
+                        }
+                    }
+                }
+                currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(originalPosition[0], originalPosition[1]),
+                        finalPosition[0], finalPosition[1]);
+                TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
+                if(lastTileType == TileType.BUTTON) {
+                    ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
+                            getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
+                    previousButton.getLinkedTrap().setActive(false);
+                }
             }
         }
+    }
+
+    private int[] moveMonster(int[] newPosition, int[] originalPosition, Actor monster) {
+        if(isValidMove(newPosition)) {
+            int[] finalPosition = collisionOccurredTile(newPosition, originalPosition, checkForTileCollision(newPosition), monster.getType());
+            finalPosition = collisionOccuredActor(finalPosition, originalPosition, checkForActorCollision(finalPosition), monster.getType());
+            if (originalPosition != finalPosition) {
+                return newPosition;
+            }
+        }
+        return originalPosition;
     }
 
     private int[] collisionOccuredActor(int[] position, int[] originalPosition, ActorType actorTypeCollision, ActorType originalActor) {
         switch (actorTypeCollision) {
             case BUG,PINKBALL,FROG, PLAYER:
-                if(!(actorTypeCollision == originalActor) && originalActor != ActorType.BLOCK) {
+                if(!(actorTypeCollision == originalActor) && originalActor != ActorType.BLOCK && (actorTypeCollision == ActorType.PLAYER || originalActor == ActorType.PLAYER)) {
                     try {
                         switchToMainMenu(new ActionEvent());
                     } catch (IOException e) {
