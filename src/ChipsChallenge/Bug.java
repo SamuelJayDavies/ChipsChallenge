@@ -22,8 +22,6 @@ public class Bug extends Actor {
 
     public Bug() {
         super(ActorType.BUG, new Image("images/stuff/bug.png"));
-        this.followDirection = KeyCode.D;
-        this.direction = KeyCode.A;
     }
 
     public KeyCode getFollowDirection() {
@@ -32,6 +30,10 @@ public class Bug extends Actor {
 
     public void setFollowDirection(KeyCode followDirection) {
         this.followDirection = followDirection;
+        this.direction = followDirection;
+        turnBug(2);
+        direction = followDirection;
+        turnBug(2);
     }
 
     public KeyCode getDirection() {

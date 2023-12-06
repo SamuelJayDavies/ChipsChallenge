@@ -47,6 +47,9 @@ public class Level {
                     if(currentActor.getType() == ActorType.PINKBALL) {
                         PinkBall pinkBall = (PinkBall) currentActor;
                         pinkBall.setDirection(convertStringToDirection(initialDirection));
+                    } else if(currentActor.getType() == ActorType.BUG) {
+                        Bug bug = (Bug) currentActor;
+                        bug.setFollowDirection(convertStringToDirection(initialDirection));
                     }
                 } else {
                     System.out.println(1);

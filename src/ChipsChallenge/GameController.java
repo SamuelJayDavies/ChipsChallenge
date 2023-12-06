@@ -76,6 +76,8 @@ public class GameController extends Application {
 
     public static User currentUser;
 
+    private int currentTick = 0;
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainMenuController.class.getResource("../fxml/game.fxml"));
@@ -103,6 +105,23 @@ public class GameController extends Application {
         tickTimeline = new Timeline(new KeyFrame(Duration.millis(250), event -> tick()));
         tickTimeline.setCycleCount(Animation.INDEFINITE);
         tickTimeline.play();
+    }
+
+    public void tick() {
+        currentTick = currentTick == 4 ? 0 : currentTick+1;
+        ArrayList<ActorType> actorsToMove = new ArrayList<>();
+        actorsToMove.add(ActorType.PINKBALL);
+        if(currentTick % 2 == 0) {
+            actorsToMove.add(ActorType.BUG);
+        }
+
+        if(currentTick == 4) {
+            currentTime = currentTime - 1;
+        }
+        movePlayer();
+        moveMonsters(actorsToMove);
+        nextMove = null;
+        drawGame();
     }
 
     @FXML
@@ -183,15 +202,6 @@ public class GameController extends Application {
         event.consume();
     }
 
-    public void tick() {
-        // Put this into player method
-        movePlayer();
-        moveMonsters();
-        currentTime = currentTime - 0.5;
-        nextMove = null;
-        drawGame();
-    }
-
     private void movePlayer() {
         Player currentPlayer = currentLevel.getActorLayer().getPlayer();
         if(nextMove == KeyCode.W || nextMove == KeyCode.A
@@ -227,12 +237,6 @@ public class GameController extends Application {
         }
     }
 
-    private void moveMonsters2() {
-        for(Actor monster: currentLevel.getActorLayer().getMonsters()) {
-
-        }
-    }
-
     private int[] getNewPosition(int x, int y, KeyCode nextMove) {
         switch (nextMove) {
             case D:
@@ -263,64 +267,75 @@ public class GameController extends Application {
         return currentActor.getType();
     }
 
-    private void moveMonsters() {
+    private boolean onActiveTrap(Actor actor) {
+        Tile possibleTrap = currentLevel.getTileLayer().getTileAt(actor.getX(), actor.getY());
+        if(possibleTrap.getType() == TileType.TRAP) {
+            Trap foundTrap = (Trap) possibleTrap;
+            return foundTrap.isActive();
+        }
+        return false;
+    }
+
+    private void moveMonsters(ArrayList<ActorType> movingActors) {
         for(Actor monster: currentLevel.getActorLayer().getMonsters()) {
-            if(monster.getType() == ActorType.PINKBALL) {
-                PinkBall currentMonster = (PinkBall) monster;
-                int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
-                int[] ballNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
-                if(isValidMove(ballNextMove)) {
-                    int[] finalPosition = collisionOccurredTile(ballNextMove, originalPosition, checkForTileCollision(ballNextMove), currentMonster.getType());
-                    finalPosition = collisionOccuredActor(finalPosition, originalPosition, checkForActorCollision(finalPosition), monster.getType());
-                    if(originalPosition == finalPosition) {
-                        currentMonster.reverseDirection();
-                    } else {
-                        currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(originalPosition[0], originalPosition[1]),
-                                finalPosition[0], finalPosition[1]);
-                        TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
-                        if(lastTileType == TileType.BUTTON) {
-                            ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
-                                    getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
-                            previousButton.getLinkedTrap().setActive(false);
+            if(!onActiveTrap(monster)) {
+                if(monster.getType() == ActorType.PINKBALL && movingActors.contains(monster.getType())) {
+                    PinkBall currentMonster = (PinkBall) monster;
+                    int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
+                    int[] ballNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                    if(isValidMove(ballNextMove)) {
+                        int[] finalPosition = collisionOccurredTile(ballNextMove, originalPosition, checkForTileCollision(ballNextMove), currentMonster.getType());
+                        finalPosition = collisionOccuredActor(finalPosition, originalPosition, checkForActorCollision(finalPosition), monster.getType());
+                        if(originalPosition == finalPosition) {
+                            currentMonster.reverseDirection();
+                        } else {
+                            currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(originalPosition[0], originalPosition[1]),
+                                    finalPosition[0], finalPosition[1]);
+                            TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
+                            if(lastTileType == TileType.BUTTON) {
+                                ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
+                                        getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
+                                previousButton.getLinkedTrap().setActive(false);
+                            }
                         }
+                    } else {
+                        // Pink ball doesn't move
+                        currentMonster.reverseDirection();
                     }
-                } else {
-                    // Pink ball doesn't move
-                    currentMonster.reverseDirection();
-                }
-            } else if(monster.getType() == ActorType.BUG) {
-                Bug currentMonster = (Bug) monster;
-                int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
-                int[] bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
-                currentMonster.turnBug(1);
-                int[] finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
-                // Not sure if it's a problem but when a bug is left in open space 4x4 he will just circle around himself
-                // This is technically how he is expected to act though
-                // Nice feature would be to check his position after certain amount of game ticks, if he is in the same position
-                // Make him move forward or backwards next turn instead of turn his desired direction
-                if(finalPosition == originalPosition) {
-                    currentMonster.turnBug(3);
-                    finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
+                } else if(monster.getType() == ActorType.BUG && movingActors.contains(monster.getType())) {
+                    Bug currentMonster = (Bug) monster;
+                    int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
+                    int[] bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                    currentMonster.turnBug(1);
+                    int[] finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
+                    // Not sure if it's a problem but when a bug is left in open space 4x4 he will just circle around himself
+                    // This is technically how he is expected to act though
+                    // Nice feature would be to check his position after certain amount of game ticks, if he is in the same position
+                    // Make him move forward or backwards next turn instead of turn his desired direction
                     if(finalPosition == originalPosition) {
-                        currentMonster.turnBug(2);
+                        currentMonster.turnBug(3);
                         finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                         if(finalPosition == originalPosition) {
-                            currentMonster.turnBug(1);
+                            currentMonster.turnBug(2);
                             finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                             if(finalPosition == originalPosition) {
-                                // Don't Move
-                                return;
+                                currentMonster.turnBug(1);
+                                finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
+                                if(finalPosition == originalPosition) {
+                                    // Don't Move
+                                    return;
+                                }
                             }
                         }
                     }
-                }
-                currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(originalPosition[0], originalPosition[1]),
-                        finalPosition[0], finalPosition[1]);
-                TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
-                if(lastTileType == TileType.BUTTON) {
-                    ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
-                            getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
-                    previousButton.getLinkedTrap().setActive(false);
+                    currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(originalPosition[0], originalPosition[1]),
+                            finalPosition[0], finalPosition[1]);
+                    TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
+                    if(lastTileType == TileType.BUTTON) {
+                        ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
+                                getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
+                        previousButton.getLinkedTrap().setActive(false);
+                    }
                 }
             }
         }

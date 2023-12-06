@@ -16,7 +16,7 @@ n,kb,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 
-p,n,n,n,n,n,n,n,n,n,n,n,n,n,pb
+p,n,n,n,n,n,n,n,n,pb,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,bl,n,pb,n,n,n,n
@@ -32,11 +32,11 @@ n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 
-n,n,n,n,n,n,n,n,n,n,n,n,n,n,left
+n,n,n,n,n,n,n,n,n,down,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,up,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
-n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,left,n,n,n,n,n,n,n,n,n,n,n,n
 
