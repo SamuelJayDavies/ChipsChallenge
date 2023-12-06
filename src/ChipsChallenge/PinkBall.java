@@ -11,7 +11,6 @@ public class PinkBall extends Actor {
 
     public PinkBall() {
         super(ActorType.PINKBALL, new Image("images/stuff/pink ball.png"));//, x, y);
-        direction = KeyCode.D;
     }
 
     public void setDirection(String direction) {

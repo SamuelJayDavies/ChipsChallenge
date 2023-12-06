@@ -120,8 +120,8 @@ public class GameController extends Application {
             throw new RuntimeException(e);
         }
         String[] dimensionsArr = splitFile(myReader ,1)[0].split(",");
-        String[][] layers = new String[4][1];
-        for(int i=0; i<4; i++) {
+        String[][] layers = new String[5][1];
+        for(int i=0; i<5; i++) {
             layers[i] = splitFile(myReader, Integer.parseInt(dimensionsArr[1]));
         }
         this.currentLevel = new Level(Integer.parseInt(dimensionsArr[0]), Integer.parseInt(dimensionsArr[1]), layers);
@@ -217,7 +217,8 @@ public class GameController extends Application {
                 TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
                 if (lastTileType == TileType.DIRT) {
                     currentLevel.getTileLayer().setTileAt(originalPosition[0], originalPosition[1], new Path());
-                } else if (lastTileType == TileType.BUTTON) {
+                    // The last tile was a button, and they aren't currently still standing on the button
+                } else if (lastTileType == TileType.BUTTON && originalPosition != finalPosition) {
                     ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
                             getTileAt(originalPosition[0], originalPosition[1]);
                     previousButton.getLinkedTrap().setActive(false);
@@ -276,6 +277,12 @@ public class GameController extends Application {
                     } else {
                         currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(originalPosition[0], originalPosition[1]),
                                 finalPosition[0], finalPosition[1]);
+                        TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
+                        if(lastTileType == TileType.BUTTON) {
+                            ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
+                                    getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
+                            previousButton.getLinkedTrap().setActive(false);
+                        }
                     }
                 } else {
                     // Pink ball doesn't move
@@ -288,7 +295,7 @@ public class GameController extends Application {
     private int[] collisionOccuredActor(int[] position, int[] originalPosition, ActorType actorTypeCollision, ActorType originalActor) {
         switch (actorTypeCollision) {
             case BUG,PINKBALL,FROG, PLAYER:
-                if(!(actorTypeCollision == originalActor)) {
+                if(!(actorTypeCollision == originalActor) && originalActor != ActorType.BLOCK) {
                     try {
                         switchToMainMenu(new ActionEvent());
                     } catch (IOException e) {
@@ -301,6 +308,11 @@ public class GameController extends Application {
                     int[] blockNextMove = getNewPosition(position[0], position[1], nextMove);
                     if(isValidMove(blockNextMove)) {
                         int[] finalPosition = collisionOccurredTile(blockNextMove, position, checkForTileCollision(blockNextMove), actorTypeCollision);
+                        finalPosition = collisionOccuredActor(finalPosition, originalPosition, checkForActorCollision(finalPosition), actorTypeCollision);
+                        // Checking for case where block is being pushed onto another actor
+                        if(checkForActorCollision(finalPosition) != ActorType.NOACTOR) {
+                            return originalPosition;
+                        }
                         TileType blockNextTileType = currentLevel.getTileLayer().getTileAt(blockNextMove[0], blockNextMove[1]).getType();
                         switch(blockNextTileType) {
                             case PATH, DIRT, ICE, ICEBL, ICEBR, ICETL, ICETR,BUTTON:
@@ -345,8 +357,8 @@ public class GameController extends Application {
         }
     }
 
-    private int[] collisionOccurredTile(int[] position, int[] originalPosition, TileType tileType, ActorType actorType) {
-        switch (tileType) {
+    private int[] collisionOccurredTile(int[] position, int[] originalPosition, TileType collisionTileType, ActorType actorType) {
+        switch (collisionTileType) {
             case WALL:
                 return originalPosition;
             case DIRT:
@@ -357,7 +369,7 @@ public class GameController extends Application {
                 }
             case ICE, ICEBL, ICEBR, ICETL, ICETR:
                 if(actorType == ActorType.PLAYER || actorType == ActorType.BLOCK) {
-                    nextMove = convertIceDirection(nextMove, tileType);
+                    nextMove = convertIceDirection(nextMove, collisionTileType);
                     int[] newerPosition = getNewPosition(position[0], position[1], nextMove);
                     collisionOccurredItem(position); // Bit of code repetition here
                     // Make this nicer later
@@ -370,12 +382,15 @@ public class GameController extends Application {
                     try {
                         switchToMainMenu(new ActionEvent());
                         // Big problem here, game logic is continuing when game should be finished
+                        tickTimeline.stop();
                         return originalPosition;
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 } else if(actorType == ActorType.BLOCK) {
                     return position;
+                } else {
+                    return originalPosition;
                 }
             case DOOR:
                 if(actorType == ActorType.PLAYER) {

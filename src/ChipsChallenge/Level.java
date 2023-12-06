@@ -1,5 +1,7 @@
 package ChipsChallenge;
 
+import javafx.scene.input.KeyCode;
+
 import java.util.Scanner;
 
 public class Level {
@@ -33,6 +35,40 @@ public class Level {
                 }
             }
             j++;
+        }
+
+        j=0;
+        for (String row: layers[4]) {
+            String[] currentActors = row.split(","); // Should probably have this in game controller or a
+            for (int i=0; i<currentActors.length; i++) {
+                if(!currentActors[i].equals("n")) {
+                    String initialDirection = currentActors[i];
+                    Actor currentActor = actorLayer.getActor(i, j);
+                    if(currentActor.getType() == ActorType.PINKBALL) {
+                        PinkBall pinkBall = (PinkBall) currentActor;
+                        pinkBall.setDirection(convertStringToDirection(initialDirection));
+                    }
+                } else {
+                    System.out.println(1);
+                }
+            }
+            j++;
+        }
+    }
+
+    private KeyCode convertStringToDirection(String direction) {
+        switch(direction) {
+            case "up":
+                return KeyCode.W;
+            case "down":
+                return KeyCode.S;
+            case "left":
+                return KeyCode.A;
+            case "right":
+                return KeyCode.D;
+            default:
+                // Should never happen
+                throw new IllegalArgumentException();
         }
     }
 
