@@ -82,7 +82,7 @@ public class GameController extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainMenuController.class.getResource("../fxml/game.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Main Menu");
+        stage.setTitle("CaveQuest");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -117,6 +117,14 @@ public class GameController extends Application {
 
         if(currentTick == 4) {
             currentTime = currentTime - 1;
+            if(currentTime == 0) {
+                try {
+                    switchToDeathScreen(new ActionEvent());
+                    DeathScreenController.stage = stage;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         movePlayer();
         moveMonsters(actorsToMove);
@@ -222,7 +230,7 @@ public class GameController extends Application {
                 // Check for actor interaction
                 finalPosition = collisionOccuredActor(finalPosition, originalPosition, checkForActorCollision(finalPosition), currentPlayer.getType());
                 currentLevel.getActorLayer().updateActor(currentPlayer, finalPosition[0], finalPosition[1]);
-                collisionOccurredItem(nextPosition);
+                collisionOccurredItem(finalPosition);
                 // Move this somewhere nicer later
                 TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
                 if (lastTileType == TileType.DIRT) {
@@ -354,10 +362,11 @@ public class GameController extends Application {
 
     private int[] collisionOccuredActor(int[] position, int[] originalPosition, ActorType actorTypeCollision, ActorType originalActor) {
         switch (actorTypeCollision) {
-            case BUG,PINKBALL,FROG, PLAYER:
+            case BUG,PINKBALL,FROG,PLAYER:
                 if(!(actorTypeCollision == originalActor) && originalActor != ActorType.BLOCK && (actorTypeCollision == ActorType.PLAYER || originalActor == ActorType.PLAYER)) {
                     try {
-                        switchToMainMenu(new ActionEvent());
+                        switchToDeathScreen(new ActionEvent());
+                        DeathScreenController.stage = stage;
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -370,16 +379,18 @@ public class GameController extends Application {
                         int[] finalPosition = collisionOccurredTile(blockNextMove, position, checkForTileCollision(blockNextMove), actorTypeCollision);
                         finalPosition = collisionOccuredActor(finalPosition, originalPosition, checkForActorCollision(finalPosition), actorTypeCollision);
                         // Checking for case where block is being pushed onto another actor
-                        if(checkForActorCollision(finalPosition) != ActorType.NOACTOR) {
+                        // This prevents the block from killing the player
+                        if(checkForActorCollision(blockNextMove) != ActorType.NOACTOR && checkForActorCollision(blockNextMove) != ActorType.PLAYER) {
                             return originalPosition;
                         }
                         TileType blockNextTileType = currentLevel.getTileLayer().getTileAt(blockNextMove[0], blockNextMove[1]).getType();
                         switch(blockNextTileType) {
                             case PATH, DIRT, ICE, ICEBL, ICEBR, ICETL, ICETR,BUTTON:
                                 // If the moving block is now on-top of the player
-                                if(finalPosition == position) {
+                                if(finalPosition == originalPosition) {
                                     try {
-                                        switchToMainMenu(new ActionEvent());
+                                        switchToDeathScreen(new ActionEvent());
+                                        DeathScreenController.stage = stage;
                                         // Big problem here, game logic is continuing when game should be finished
                                     } catch (IOException e) {
                                         throw new RuntimeException(e);
@@ -431,7 +442,9 @@ public class GameController extends Application {
                 if(actorType == ActorType.PLAYER || actorType == ActorType.BLOCK) {
                     nextMove = convertIceDirection(nextMove, collisionTileType);
                     int[] newerPosition = getNewPosition(position[0], position[1], nextMove);
-                    collisionOccurredItem(position); // Bit of code repetition here
+                    if(actorType == ActorType.PLAYER) {
+                        collisionOccurredItem(position); // Bit of code repetition here
+                    }
                     // Make this nicer later
                     return collisionOccurredTile(newerPosition, originalPosition, checkForTileCollision(newerPosition), actorType);
                 } else {
@@ -440,7 +453,8 @@ public class GameController extends Application {
             case WATER:
                 if(actorType == ActorType.PLAYER) {
                     try {
-                        switchToMainMenu(new ActionEvent());
+                        switchToDeathScreen(new ActionEvent());
+                        DeathScreenController.stage = stage;
                         // Big problem here, game logic is continuing when game should be finished
                         tickTimeline.stop();
                         return originalPosition;
@@ -551,11 +565,11 @@ public class GameController extends Application {
         }
     }
 
-    public void switchToMainMenu(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/main-menu.fxml"));
+    public void switchToDeathScreen(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/death-screen.fxml"));
         tickTimeline.stop(); // Fix this later
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Main Menu");
+        stage.setTitle("Unlucky");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

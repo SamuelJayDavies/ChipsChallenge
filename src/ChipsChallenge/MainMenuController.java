@@ -25,7 +25,7 @@ public class MainMenuController extends Application {
     @FXML
     private TextField inputBox;
 
-    private Stage stage;
+    public static Stage stage;
 
     @Override
     public void start(Stage stage) throws IOException {
