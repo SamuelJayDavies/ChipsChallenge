@@ -2,6 +2,12 @@ package ChipsChallenge;
 import java.util.ArrayList;
 
 public class HighScore {
+
+    /* 
+     * Constructs the UserScore class
+     * @param username stores the username of the user related to the score
+     * @param score stores the actual score achieved by the user
+     */
     private class UserScore {
         String username;
         int score;
