@@ -28,12 +28,13 @@ public class Bug extends Actor {
         return followDirection;
     }
 
+    public void setBothDirection(KeyCode followDirection, KeyCode direction) {
+        this.followDirection = followDirection;
+        this.direction = direction;
+    }
+
     public void setFollowDirection(KeyCode followDirection) {
         this.followDirection = followDirection;
-        this.direction = followDirection;
-        turnBug(2);
-        direction = followDirection;
-        turnBug(2);
     }
 
     public KeyCode getDirection() {
@@ -78,5 +79,12 @@ public class Bug extends Actor {
                 }
             }
         }
+    }
+
+    public KeyCode reverseDirection(KeyCode direction) {
+        return (direction == KeyCode.D) ? KeyCode.A :
+                (direction == KeyCode.A) ? KeyCode.D :
+                        (direction == KeyCode.W) ? KeyCode.S :
+                                KeyCode.W;
     }
 }

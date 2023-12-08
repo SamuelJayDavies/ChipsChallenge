@@ -1,4 +1,4 @@
-15,7,1
+15,7,120,1,CS-230
 
 p,p,p,p,p,p,p,p,p,p,p,p,p,p,p
 p,i,i,itr,p,p,w,w,w,p,p,wt,wt,wt,p

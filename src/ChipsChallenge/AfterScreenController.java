@@ -21,6 +21,8 @@ public class AfterScreenController extends Application {
     public static String titleMsg;
     public static String message;
 
+    public static boolean isDead;
+
     @FXML
     public Label titleNameForeground;
 
@@ -53,7 +55,11 @@ public class AfterScreenController extends Application {
             titleNameBackground.setText(titleMsg);
             messageForeground.setText(message);
             messageBackground.setText(message);
-            titleVBox.setLayoutX(titleVBox.getLayoutX() - 75);
+            if(isDead) {
+                titleVBox.setLayoutX(titleVBox.getLayoutX() - 75);
+            } else {
+                titleVBox.setLayoutX(titleVBox.getLayoutX() - 20);
+            }
         }
     }
 

@@ -8,6 +8,10 @@ public class Level {
 
     private int levelNum;
 
+    private String levelDesc;
+
+    private int levelTime;
+
     private int width;
 
     private int height;
@@ -17,10 +21,12 @@ public class Level {
     private ItemLayer itemLayer;
     private ActorLayer actorLayer;
 
-    public Level(int width, int height, int levelNum, String[][] layers) {
+    public Level(int width, int height, int levelTime, int levelNum, String levelDesc, String[][] layers) {
         this.width = width;
         this.height = height;
+        this.levelTime = levelTime;
         this.levelNum = levelNum;
+        this.levelDesc = levelDesc;
         this.tileLayer = new TileLayer(width, height, layers[0]);
         this.itemLayer = new ItemLayer(width, height, layers[1]);
         this.actorLayer = new ActorLayer(width, height, layers[2]);
@@ -49,11 +55,10 @@ public class Level {
                         PinkBall pinkBall = (PinkBall) currentActor;
                         pinkBall.setDirection(convertStringToDirection(initialDirection));
                     } else if(currentActor.getType() == ActorType.BUG) {
+                        String[] directions = initialDirection.split(":");
                         Bug bug = (Bug) currentActor;
-                        bug.setFollowDirection(convertStringToDirection(initialDirection));
+                        bug.setBothDirection(convertStringToDirection(directions[0]), convertStringToDirection(directions[1]));
                     }
-                } else {
-
                 }
             }
             j++;
@@ -98,5 +103,13 @@ public class Level {
 
     public int getLevelNum() {
         return levelNum;
+    }
+
+    public String getLevelDesc() {
+        return levelDesc;
+    }
+
+    public int getLevelTime() {
+        return levelTime;
     }
 }
