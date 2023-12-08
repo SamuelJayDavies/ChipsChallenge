@@ -94,4 +94,8 @@ public class Level {
     public ActorLayer getActorLayer() {
         return actorLayer;
     }
+
+    public int getLevelNum() {
+        return levelNum;
+    }
 }

@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,7 +22,6 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -120,7 +118,7 @@ public class GameController extends Application {
             if(currentTime == 0) {
                 try {
                     switchToDeathScreen(new ActionEvent());
-                    DeathScreenController.stage = stage;
+                    AfterScreenController.stage = stage;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -139,7 +137,8 @@ public class GameController extends Application {
 
     @FXML
     public void testFileLoad()  {
-        File myFile = new File("src/levels/level" + currentUser.getHighestLevelNum() + ".txt");
+        int currentLevel = currentUser.getHighestLevelNum() + 1;
+        File myFile = new File("src/levels/level" + currentLevel + ".txt");
         Scanner myReader = null;
         try {  // Change this to just throw fileNotFoundException and crash program
             myReader = new Scanner(myFile);
@@ -366,7 +365,7 @@ public class GameController extends Application {
                 if(!(actorTypeCollision == originalActor) && originalActor != ActorType.BLOCK && (actorTypeCollision == ActorType.PLAYER || originalActor == ActorType.PLAYER)) {
                     try {
                         switchToDeathScreen(new ActionEvent());
-                        DeathScreenController.stage = stage;
+                        AfterScreenController.stage = stage;
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -390,7 +389,7 @@ public class GameController extends Application {
                                 if(finalPosition == originalPosition) {
                                     try {
                                         switchToDeathScreen(new ActionEvent());
-                                        DeathScreenController.stage = stage;
+                                        AfterScreenController.stage = stage;
                                         // Big problem here, game logic is continuing when game should be finished
                                     } catch (IOException e) {
                                         throw new RuntimeException(e);
@@ -454,7 +453,7 @@ public class GameController extends Application {
                 if(actorType == ActorType.PLAYER) {
                     try {
                         switchToDeathScreen(new ActionEvent());
-                        DeathScreenController.stage = stage;
+                        AfterScreenController.stage = stage;
                         // Big problem here, game logic is continuing when game should be finished
                         tickTimeline.stop();
                         return originalPosition;
@@ -493,6 +492,16 @@ public class GameController extends Application {
                         getTileAt(position[0], position[1]);
                 currentButton.getLinkedTrap().setActive(true);
                 return position;
+            case EXIT:
+                // Calculate score here
+                currentUser.setHighestLevelNum(currentLevel.getLevelNum());
+                currentUser.setCurrentLevel(null);
+                try {
+                    switchToVictoryScreen(new ActionEvent());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             default:
                 return position;
         }
@@ -566,10 +575,24 @@ public class GameController extends Application {
     }
 
     public void switchToDeathScreen(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/death-screen.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/after-game.fxml"));
         tickTimeline.stop(); // Fix this later
+        AfterScreenController.currentUser = currentUser;
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Unlucky");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void switchToVictoryScreen(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/after-game.fxml"));
+        tickTimeline.stop(); // Fix this later
+        AfterScreenController.currentUser = currentUser;
+        AfterScreenController.titleMsg = "Congratulations!";
+        AfterScreenController.message = "Would you like to play the next level";
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setTitle("Congratulations!");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

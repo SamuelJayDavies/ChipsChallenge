@@ -6,5 +6,5 @@ Luke,1
 Jake,1
 Abigail,1
 John,2
-Sam,2
-john,3
+Sam,1
+john,2
