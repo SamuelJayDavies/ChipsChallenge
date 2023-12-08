@@ -52,7 +52,7 @@ public class Level {
                         bug.setFollowDirection(convertStringToDirection(initialDirection));
                     }
                 } else {
-                    System.out.println(1);
+
                 }
             }
             j++;
