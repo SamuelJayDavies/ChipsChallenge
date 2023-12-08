@@ -56,6 +56,11 @@
                         <Insets bottom="10.0" left="10.0" />
                      </HBox.margin>
                   </Button>
+                  <Button mnemonicParsing="false" onAction="#switchToHighScore" text="Highscores">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
             <HBox alignment="BOTTOM_RIGHT" prefHeight="69.0" prefWidth="448.0">

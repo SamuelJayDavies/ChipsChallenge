@@ -7,8 +7,8 @@ package ChipsChallenge;
  */
 public class UserScore {
 
-    String username;
-    double score;
+    private String username;
+    private double score;
 
     UserScore(String username, double score){
         this.username = username;

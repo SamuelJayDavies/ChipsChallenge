@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="404.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChipsChallenge.AfterScreenController">
+<AnchorPane prefHeight="404.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChipsChallenge.HighscoreController">
     <children>
         <VBox fx:id="mainVBox" prefHeight="404.0" prefWidth="600.0" style="-fx-background-size: 675;" styleClass="mainVBox" stylesheets="@../style/mainMenuStyle.css">
             <children>
@@ -57,11 +57,14 @@
                 </Pane>
                 <Pane prefHeight="27.0" prefWidth="600.0">
                <children>
-                  <TableView layoutX="200.0" layoutY="-80.0" prefHeight="200.0" prefWidth="200.0">
+                  <TableView fx:id="highscoreTable" layoutX="200.0" layoutY="-80.0" prefHeight="250.0" prefWidth="200.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
+                      <TableColumn fx:id="usernameID" prefWidth="75.0" text="Username" />
+                      <TableColumn fx:id="scoreID" prefWidth="75.0" text="Score" />
                     </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
                   </TableView>
                </children></Pane>
                 <HBox alignment="BOTTOM_RIGHT" prefHeight="179.0" prefWidth="600.0">

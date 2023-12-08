@@ -42,7 +42,6 @@ public class AfterScreenController extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainMenuController.class.getResource("../fxml/after-game.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Unlucky");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -79,7 +78,7 @@ public class AfterScreenController extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/main-menu.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         MainMenuController.stage = stage;
-        stage.setTitle("Unlucky");
+        stage.setTitle("Main Menu");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

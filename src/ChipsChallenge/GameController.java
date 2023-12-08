@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -620,6 +621,18 @@ public class GameController extends Application {
         AfterScreenController.message = "Would you like to play the next level";
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Congratulations!");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void switchToHighScore(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/highscore.fxml"));
+        tickTimeline.stop();
+        HighscoreController.levelNum = currentLevel.getLevelNum();
+        Scene scene = new Scene(fxmlLoader.load());
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow(); // Need this line for initalize
+        stage.setTitle("Highscore Table");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

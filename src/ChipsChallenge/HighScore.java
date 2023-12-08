@@ -19,24 +19,24 @@ public class HighScore {
 
     // Return the current highscore
     public double getCurrentHighscore(){
-        return highScore.get(0).score;
+        return highScore.get(0).getScore();
     }
 
     // Return the player with the current highscore
     public String getCurrentHighscorePlayer(){
-        return highScore.get(0).username;
+        return highScore.get(0).getUsername();
     }
     
     // Check if a new score from a user beats the current highscore.
     // Also checks if the array already has 10 elements and removes the smallest element
     public void uploadNewScore(double score, String user){
         UserScore newUserScore = new UserScore(user, score);
-        if (highScore.size() == 10 && highScore.get(9).score < score) {
+        if (highScore.size() == 10 && highScore.get(9).getScore() < score) {
             highScore.remove(9);
         }
         if (highScore.size() < 10) {
             int i = 0;
-            while (i < highScore.size() && highScore.get(i).score > score) {
+            while (i < highScore.size() && highScore.get(i).getScore() > score) {
                 i++;
             }
             highScore.add(i, newUserScore);
