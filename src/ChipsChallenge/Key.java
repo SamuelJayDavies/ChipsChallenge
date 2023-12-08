@@ -1,6 +1,5 @@
 package ChipsChallenge;
 
-import ChipsChallenge.Item;
 import javafx.scene.image.Image;
 
 class Key extends Item {
@@ -9,7 +8,7 @@ class Key extends Item {
     // Constructor to create a Key with a specific color at a certain location
     public Key(char colour) {
         // Calls the constructor of the Item class with the name "Key" and the specified location
-        super(ItemType.KEY, new Image("images/stuff/keys.png"));
+        super(ItemType.KEY, new Image("images/stuff/key" + colour + ".png"));
         switch (colour) {
             case 'r' -> this.colour = Colour.RED;
             case 'b' -> this.colour = Colour.BLUE;

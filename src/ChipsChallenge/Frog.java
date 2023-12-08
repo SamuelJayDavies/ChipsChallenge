@@ -35,7 +35,7 @@ public class Frog extends Actor {
         };
 
         // Shuffle the array to randomize the movement
-        shuffleArray(possibleMoves);
+        //shuffleArray(possibleMoves);
 
         for (int[] move : possibleMoves) {
             int nextX = move[0];
@@ -43,7 +43,7 @@ public class Frog extends Actor {
 
             if (canMove(nextX, nextY, actorLayer)) {
                 actorLayer.updateActor(this, nextX, nextY);
-                break;  // Move only once in this AI example
+                break; 
             }
         }
     }
@@ -80,6 +80,7 @@ public class Frog extends Actor {
      *
      * @param array The array to shuffle.
      */
+    /*
     private void shuffleArray(int[][] array) {
         Random rand = new Random();
         for (int i = array.length - 1; i > 0; i--) {
@@ -89,4 +90,5 @@ public class Frog extends Actor {
             array[i] = temp;
         }
     }
+    */
 }

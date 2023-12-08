@@ -1,15 +1,15 @@
-15,7
+15,7,300,3,Chips and Doors
 
 p,p,p,p,p,p,p,p,p,p,p,p,p,p,p
-p,i,p,i,i,i,p,p,i,i,i,i,w,p,p
 p,p,p,p,p,p,p,p,p,p,p,p,p,p,p
-p,p,p,i,i,i,itr,p,p,p,p,p,p,p,p
-p,p,p,p,p,p,i,p,w,p,p,p,p,p,p
-p,p,p,i,i,i,ibr,p,p,p,p,p,p,p,p
+p,p,p,p,p,dr,dr,dr,p,p,p,p,p,p,p
+p,p,p,p,p,dr,dy,db,dg,p,p,p,p,p,p
 p,p,p,p,p,p,p,p,p,p,p,p,p,p,p
+p,p,p,p,p,cs5,cs2,cs3,p,p,p,p,p,p,p
+p,p,p,p,p,p,p,p,p,p,p,p,p,p,e
 
-n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
-n,n,c,n,c,n,c,n,n,n,n,n,n,n,n
+n,n,c,c,c,c,c,c,c,c,c,c,c,n,n
+n,n,kr,ky,kb,kg,n,kr,ky,kb,kg,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
@@ -19,7 +19,7 @@ n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 p,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
-n,bl,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
