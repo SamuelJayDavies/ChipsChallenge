@@ -1,11 +1,11 @@
 15,7,300,5,Bouncy Bugs
 
-p,p,p,p,p,p,p,p,p,p,p,p,p,p,p
-p,p,p,p,p,wt,wt,wt,wt,wt,p,p,p,p,p
-p,p,p,p,p,wt,p,p,p,wt,p,p,p,p,p
-p,p,p,p,p,wt,p,p,p,wt,p,p,p,p,p
-p,p,p,p,p,wt,p,p,p,wt,p,p,p,p,p
-p,p,p,p,p,wt,wt,wt,wt,wt,p,p,p,p,p
+e,p,p,p,p,p,p,p,p,p,p,p,p,p,p
+p,w,w,w,p,wt,wt,wt,wt,wt,p,w,w,w,p
+p,p,p,p,p,wt,p,p,p,wt,p,p,w,p,p
+p,w,w,w,p,wt,p,p,p,wt,p,p,w,p,p
+p,p,p,p,p,wt,p,p,p,wt,p,p,w,p,p
+p,w,w,w,p,wt,wt,wt,wt,wt,p,p,w,p,p
 p,p,p,p,p,p,p,p,p,p,p,p,p,p,p
 
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
@@ -16,8 +16,8 @@ n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 
-n,n,n,n,n,n,n,b,n,n,n,n,n,n,n
-n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
+n,b,n,n,n,n,n,b,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,b,n,n
 n,n,n,n,n,n,n,bl,n,n,n,n,n,n,n
 n,n,n,n,n,n,bl,p,bl,n,n,n,n,n,n
 n,n,n,n,n,n,n,bl,n,n,n,n,n,n,n
@@ -32,11 +32,11 @@ n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 
-n,n,n,n,n,n,n,left:left,n,n,n,n,n,n,n
+n,left:left,n,n,n,n,n,left:left,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,n,n,n,n,n,right:right,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
-n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
-n,n,n,n,n,n,n,right:left,n,n,n,n,n,n,n
+n,n,n,n,n,n,n,left:right,n,n,n,n,n,n,n
 

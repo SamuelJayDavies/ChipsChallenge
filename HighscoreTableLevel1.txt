@@ -1,0 +1,5 @@
+bestPlayer,585.0
+tester,585.0
+THEGOAT,456.0
+averagePlayer,444.0
+badplayer,234.0

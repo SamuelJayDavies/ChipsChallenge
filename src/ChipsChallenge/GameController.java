@@ -327,12 +327,12 @@ public class GameController extends Application {
                         bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                         finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                         if(finalPosition == originalPosition) {
+                            currentMonster.turnBug(1);
                             bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
-                            currentMonster.turnBug(2);
                             finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                             if(finalPosition == originalPosition) {
+                                currentMonster.turnBug(2);
                                 bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
-                                currentMonster.turnBug(3);
                                 finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                                 if(finalPosition == originalPosition) {
                                     // Don't Move
@@ -503,9 +503,14 @@ public class GameController extends Application {
                 return position;
             case EXIT:
                 // Calculate score here
+                // Put this in its own method
                 if(actorType == ActorType.PLAYER) {
                     currentUser.setHighestLevelNum(currentLevel.getLevelNum());
                     currentUser.setCurrentLevel(null);
+                    double score = currentTime * (chipCount + 1);
+                    HighScore currentHighScore = new HighScore(currentLevel.getLevelNum());
+                    currentHighScore.uploadNewScore(score, currentUser.getUserName());
+                    System.out.println(currentHighScore.getScoreboard());
                     LogIn.updateUser(currentUser.getUserName(), currentUser.getHighestLevelNum(), currentUser.getCurrentLevel());
                     try {
                         switchToVictoryScreen(new ActionEvent());
@@ -608,6 +613,8 @@ public class GameController extends Application {
         tickTimeline.stop(); // Fix this later
         AfterScreenController.currentUser = currentUser;
         AfterScreenController.isDead = true;
+        // Could also add here high score passed into the victory screen, and if they beat any high scores what position
+        // they are now in
         AfterScreenController.stage = stage;
         AfterScreenController.titleMsg = "Congratulations!";
         AfterScreenController.message = "Would you like to play the next level";
