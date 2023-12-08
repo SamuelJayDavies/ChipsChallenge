@@ -332,7 +332,7 @@ public class GameController extends Application {
                             finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                             if(finalPosition == originalPosition) {
                                 bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
-                                currentMonster.turnBug(1);
+                                currentMonster.turnBug(3);
                                 finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                                 if(finalPosition == originalPosition) {
                                     // Don't Move

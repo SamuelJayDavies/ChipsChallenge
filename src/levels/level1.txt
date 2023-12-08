@@ -38,5 +38,5 @@ n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,up,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
 n,n,n,n,n,n,n,n,n,n,n,n,n,n,n
-n,n,left,n,n,n,n,n,n,n,n,n,n,n,n
+n,n,left:right,n,n,n,n,n,n,n,n,n,n,n,n
 
