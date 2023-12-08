@@ -1,10 +1,3 @@
-Scott,1
-Emma,1
-James,1
-Ted,1
-Luke,1
-Jake,1
-Abigail,1
-John,2
-Sam,1
-john,2
+sam,1
+test,1
+John,1

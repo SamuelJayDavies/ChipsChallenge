@@ -17,9 +17,10 @@ public class Level {
     private ItemLayer itemLayer;
     private ActorLayer actorLayer;
 
-    public Level(int width, int height, String[][] layers) {
+    public Level(int width, int height, int levelNum, String[][] layers) {
         this.width = width;
         this.height = height;
+        this.levelNum = levelNum;
         this.tileLayer = new TileLayer(width, height, layers[0]);
         this.itemLayer = new ItemLayer(width, height, layers[1]);
         this.actorLayer = new ActorLayer(width, height, layers[2]);

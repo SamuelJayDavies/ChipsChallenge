@@ -145,12 +145,12 @@ public class GameController extends Application {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        String[] dimensionsArr = splitFile(myReader ,1)[0].split(",");
+        String[] infoArr = splitFile(myReader ,1)[0].split(",");
         String[][] layers = new String[5][1];
         for(int i=0; i<5; i++) {
-            layers[i] = splitFile(myReader, Integer.parseInt(dimensionsArr[1]));
+            layers[i] = splitFile(myReader, Integer.parseInt(infoArr[1]));
         }
-        this.currentLevel = new Level(Integer.parseInt(dimensionsArr[0]), Integer.parseInt(dimensionsArr[1]), layers);
+        this.currentLevel = new Level(Integer.parseInt(infoArr[0]), Integer.parseInt(infoArr[1]), Integer.parseInt(infoArr[2]), layers);
     }
 
     private String[] splitFile(Scanner levelFile, int height) {
@@ -496,6 +496,7 @@ public class GameController extends Application {
                 // Calculate score here
                 currentUser.setHighestLevelNum(currentLevel.getLevelNum());
                 currentUser.setCurrentLevel(null);
+                LogIn.updateUser(currentUser.getUserName(), currentUser.getHighestLevelNum(), currentUser.getCurrentLevel());
                 try {
                     switchToVictoryScreen(new ActionEvent());
                 } catch (IOException e) {
