@@ -1,7 +1,6 @@
 package ChipsChallenge;
 
 import javafx.scene.image.Image;
-import java.util.Random;
 
 /**
  * The Frog class represents a type of monster in the game Chips Challenge.
@@ -43,7 +42,7 @@ public class Frog extends Actor {
 
             if (canMove(nextX, nextY, actorLayer)) {
                 actorLayer.updateActor(this, nextX, nextY);
-                break; 
+                break;
             }
         }
     }
@@ -74,12 +73,6 @@ public class Frog extends Actor {
         }
         return true;
     }
-
-    /**
-     * Shuffle a 2D array.
-     *
-     * @param array The array to shuffle.
-     */
     /*
     private void shuffleArray(int[][] array) {
         Random rand = new Random();
