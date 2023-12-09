@@ -70,7 +70,9 @@ public class GameController extends Application {
 
     private int chipCount = 0;
 
-    private double currentTime;
+    private int currentTime;
+
+    private boolean isSavedLevel = false;
 
     public static User currentUser;
 
@@ -96,8 +98,10 @@ public class GameController extends Application {
         testFileLoad();
         levelNumTxt.setText("level " + currentLevel.getLevelNum());
         levelNameTxt.setText(currentLevel.getLevelDesc());
-        inventory = new ArrayList<>();
-        currentTime = currentLevel.getLevelTime();
+        if(!isSavedLevel) {
+            currentTime = currentLevel.getLevelTime();
+            inventory = new ArrayList<>();
+        }
         drawGame();
         drawInventory();
         // For this tick timeline to have varying speed we need to store an internal tick count.
@@ -150,20 +154,34 @@ public class GameController extends Application {
 
     @FXML
     public void testFileLoad()  {
-        int currentLevel = currentUser.getHighestLevelNum() + 1;
-        File myFile = new File("src/levels/level" + currentLevel + ".txt");
-        Scanner myReader = null;
-        try {  // Change this to just throw fileNotFoundException and crash program
-            myReader = new Scanner(myFile);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        ArrayList<SavedLevel> savedLevels = readInSavedLevels();
+        for(SavedLevel savedLevel: savedLevels) {
+            if(savedLevel.getUsername().equals(currentUser.getUserName())) {
+                this.currentLevel = savedLevel.getLevel();
+                isSavedLevel = true;
+                inventory = savedLevel.getInventory();
+                currentTime = savedLevel.getCurrentTime();
+                chipCount = savedLevel.getChipCount();
+            }
         }
-        String[] infoArr = splitFile(myReader ,1)[0].split(",");
-        String[][] layers = new String[5][1];
-        for(int i=0; i<5; i++) {
-            layers[i] = splitFile(myReader, Integer.parseInt(infoArr[1]));
+
+        if(currentLevel == null) {
+            int currentLevel = currentUser.getHighestLevelNum() + 1;
+            File myFile = new File("src/levels/level" + currentLevel + ".txt");
+            Scanner myReader = null;
+            try {  // Change this to just throw fileNotFoundException and crash program
+                myReader = new Scanner(myFile);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            String[] infoArr = splitFile(myReader ,1)[0].split(",");
+            String[][] layers = new String[5][1];
+            for(int i=0; i<5; i++) {
+                layers[i] = splitFile(myReader, Integer.parseInt(infoArr[1]));
+            }
+            this.currentLevel = new Level(Integer.parseInt(infoArr[0]), Integer.parseInt(infoArr[1]),
+                    Integer.parseInt(infoArr[2]), Integer.parseInt(infoArr[3]), infoArr[4], layers);
         }
-        this.currentLevel = new Level(Integer.parseInt(infoArr[0]), Integer.parseInt(infoArr[1]), Integer.parseInt(infoArr[2]), Integer.parseInt(infoArr[3]), infoArr[4], layers);
     }
 
     private String[] splitFile(Scanner levelFile, int height) {
@@ -658,7 +676,6 @@ public class GameController extends Application {
         stage.show();
     }
 
-    /*
     private ArrayList<SavedLevel> readInSavedLevels() {
         String fileName = "SavedLevels.txt";
         File savedLevelsFile = new File(fileName);
@@ -670,14 +687,29 @@ public class GameController extends Application {
         ArrayList<SavedLevel> savedLevels = new ArrayList<>();
         try{
             Scanner in = new Scanner(savedLevelsFile);
-            while(in.hasNextLine()) {
-
+            String[] infoArr = splitFile(in, 3);
+            String[] originalLevelArr = infoArr[0].split(",");
+            String[] newLevelArr = infoArr[1].split(",");
+            String[] inventoryArr = infoArr[2].split(",");
+            ArrayList<Key> currentInventory = new ArrayList<>();
+            for(String key: inventoryArr) {
+                currentInventory.add(new Key(key.charAt(1)));
             }
+
+            String[][] layers = new String[5][1];
+            for(int i=0; i<5; i++) {
+                layers[i] = splitFile(in, Integer.parseInt(originalLevelArr[1]));
+            }
+            Level originalLevel = new Level(Integer.parseInt(originalLevelArr[0]), Integer.parseInt(originalLevelArr[1]),
+                    Integer.parseInt(originalLevelArr[2]), Integer.parseInt(originalLevelArr[3]), originalLevelArr[4], layers);
+            SavedLevel savedLevel = new SavedLevel(newLevelArr[0], Integer.parseInt(newLevelArr[1]),
+                    Integer.parseInt(newLevelArr[2]), currentInventory, originalLevel);
+            savedLevels.add(savedLevel);
         } catch(FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+        return savedLevels;
     }
-     */
 
     @FXML
     private void saveCurrentLevel() {

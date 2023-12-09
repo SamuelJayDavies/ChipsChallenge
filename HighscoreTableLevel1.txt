@@ -1,6 +1,9 @@
 dmwd,585.0
 bestPlayer,585.0
 tester,585.0
+bob,570.0
+newUser,515.0
 THEGOAT,456.0
 averagePlayer,444.0
 badplayer,234.0
+natalie,228.0

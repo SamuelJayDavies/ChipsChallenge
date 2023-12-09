@@ -10,11 +10,11 @@ public class SavedLevel {
 
     private int chipCount;
 
-    private ArrayList<Item> inventory;
+    private ArrayList<Key> inventory;
 
     private Level level;
 
-    public SavedLevel(String username, int currentTime, int chipCount, ArrayList<Item> inventory, Level level) {
+    public SavedLevel(String username, int currentTime, int chipCount, ArrayList<Key> inventory, Level level) {
         this.username = username;
         this.currentTime = currentTime;
         this.chipCount = chipCount;
@@ -46,11 +46,11 @@ public class SavedLevel {
         this.chipCount = chipCount;
     }
 
-    public ArrayList<Item> getInventory() {
+    public ArrayList<Key> getInventory() {
         return inventory;
     }
 
-    public void setInventory(ArrayList<Item> inventory) {
+    public void setInventory(ArrayList<Key> inventory) {
         this.inventory = inventory;
     }
 

@@ -7,7 +7,7 @@ thegoat,2
 THEgoat,0
 GOAT,1
 THEGOAT,2
-bob,0
+bob,1
 badplayer,1
 averagePlayer,1
 tester,1
@@ -43,3 +43,9 @@ jawf,0
 jakw,0
 eakwd,0
 se,0
+newUser,1
+kawd,0
+kawtwt,0
+natalie,3
+alowd,0
+john,0
