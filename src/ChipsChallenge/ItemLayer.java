@@ -75,7 +75,7 @@ class ItemLayer {
         } else if(type.charAt(0) == 'c') {
             return new Chip();
         } else {
-            return null;
+            throw new IllegalArgumentException();
         }
     }
 

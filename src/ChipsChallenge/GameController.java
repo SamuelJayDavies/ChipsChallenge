@@ -20,9 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -89,6 +87,11 @@ public class GameController extends Application {
 
     @FXML
     private void initialize() {
+        gameStart();
+    }
+
+    @FXML
+    private void gameStart() {
         testFileLoad();
         levelNumTxt.setText("level " + currentLevel.getLevelNum());
         levelNameTxt.setText(currentLevel.getLevelDesc());
@@ -105,6 +108,12 @@ public class GameController extends Application {
         tickTimeline = new Timeline(new KeyFrame(Duration.millis(250), event -> tick()));
         tickTimeline.setCycleCount(Animation.INDEFINITE);
         tickTimeline.play();
+    }
+
+    @FXML
+    private void reset() {
+        tickTimeline.stop();
+        gameStart();
     }
 
     public void tick() {
@@ -637,6 +646,149 @@ public class GameController extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
+    public void switchToMainMenu(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/main-menu.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        MainMenuController.stage = stage;
+        stage.setTitle("Main Menu");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private void saveCurrentLevel() {
+        String tempCurrentLevels = "tempCurrentLevels.txt";
+        File oldFile = new File("SavedLevels.txt");
+        File newFile = new File(tempCurrentLevels);
+        try{
+            FileWriter fileWriter = new FileWriter(newFile, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            PrintWriter printWriter = new PrintWriter(bufferedWriter);
+            TileLayer tileLayer = currentLevel.getTileLayer();
+            for(int i=0; i<tileLayer.getTiles().length; i++) {
+                for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
+                    String tileStr = convertTileToString(tileLayer.getTileAt(j,i));
+                    printWriter.write(tileStr + ",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            ItemLayer itemLayer = currentLevel.getItemLayer();
+            for(int i=0; i<itemLayer.getItems().length; i++) {
+                for(int j=0; j<itemLayer.getItems()[0].length; j++) {
+                    String itemStr = convertItemToString(itemLayer.getItemAt(j,i));
+                    printWriter.write(itemStr + ",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            ActorLayer actorLayer = currentLevel.getActorLayer();
+            for(int i=0; i<actorLayer.getActors().length; i++) {
+                for(int j=0; j<actorLayer.getActors()[0].length; j++) {
+                    String actorStr = convertActorToString(actorLayer.getActor(j,i));
+                    printWriter.write(actorStr + ",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            printWriter.flush();
+            printWriter.close();
+            if(oldFile.delete()) {
+                File dump = new File("SavedLevels.txt");
+                if(!(newFile.renameTo(dump))) {
+                    System.out.println("New file couldn't be renamed");
+                }
+            } else {
+                System.out.println("Old file couldn't be deleted");
+            }
+        } catch(IOException e) {
+            System.out.println("Problem");
+        }
+    }
+
+    public String convertTileToString(Tile tile) {
+        switch(tile.getType()) {
+            case PATH:
+                return "p";
+            case DIRT:
+                return "di";
+            case WALL:
+                return "w";
+            case EXIT:
+                return "e";
+            case BUTTON:
+                return "b";
+            case TRAP:
+                return "t";
+            case WATER:
+                return "wt";
+            case ICE:
+                return "i";
+            case ICETR:
+                return "itr";
+            case ICETL:
+                return "itl";
+            case ICEBR:
+                return "ibr";
+            case ICEBL:
+                return "ibl";
+            case CHIPSOCKET:
+                ChipSocket currentTile = (ChipSocket) tile;
+                return "cs" + currentTile.getChipsRequired();
+            case DOOR:
+                Door currentDoor = (Door) tile;
+                char doorColour = currentDoor.getColour().toString().charAt(0);
+                return "d" + Character.toLowerCase(doorColour);
+            default:
+                // That should have covered every tile
+                return "ERROR";
+        }
+    }
+
+    public String convertItemToString(Item item) {
+        switch(item.getType()) {
+            case NOTHING:
+                return "n";
+            case KEY:
+                Key currentKey = (Key) item;
+                char doorColour = currentKey.getColour().toString().charAt(0);
+                return "k" + Character.toLowerCase(doorColour);
+            case CHIP:
+                return "c";
+            default:
+                // Every case should have been covered
+                return "ERROR";
+        }
+    }
+
+    public String convertActorToString(Actor actor) {
+        switch(actor.getType()) {
+            case NOACTOR:
+                return "n";
+            case PLAYER:
+                return "p";
+            case PINKBALL:
+                return "pb";
+            case BLOCK:
+                return "bl";
+            case BUG:
+                return "b";
+            case FROG:
+                return "f";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+
 
     public static void main(String[] args) {
         launch(args);
