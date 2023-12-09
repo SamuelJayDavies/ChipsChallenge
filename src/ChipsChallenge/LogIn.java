@@ -19,7 +19,11 @@ import java.io.*;
 import java.util.Objects;
 import java.util.Scanner;
 
+/**
+ * The LogIn class provides the main functionality for user login or to add a new player.
+ */
 public class LogIn extends Application {
+    // Instance variables
     String player;
     int level;
     Stage stage;
@@ -29,10 +33,16 @@ public class LogIn extends Application {
     Scene sceneWelcome;
     Background bg = new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY));
 
+    /**
+     * The start method is called when the application is launched.This is also where all the buttons
+     * and text boxes etc. are created to be used in the made log in stage.
+     *
+     * @param primaryStage The primary stage for the application.
+     * @throws Exception If an exception occurs during the execution.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
-        // log in
         //creating username label
         Label lb1Username = new Label("Username;");
         txtUsername = new TextField();
@@ -41,7 +51,7 @@ public class LogIn extends Application {
         txtUsername.setMaxWidth(300);
         txtUsername.setPromptText("Enter username here");
 
-        // Create the log in and sign up buttons
+        // Create the log-in and add player buttons
         Button btnLogin = new Button("Log in");
         btnLogin.setPrefWidth(80);
         btnLogin.setOnAction(e -> btnLogin_Click(txtUsername));
@@ -76,7 +86,7 @@ public class LogIn extends Application {
         primaryStage.setMaxWidth(900);
         primaryStage.show();
 
-        //sign up
+        //add player
         Label lb1newUsername = new Label("Username;");
         txtNewUser = new TextField();
         txtNewUser.setMinWidth(100);
@@ -84,7 +94,7 @@ public class LogIn extends Application {
         txtNewUser.setMaxWidth(300);
         txtNewUser.setPromptText("Enter player name here");
 
-        // Create the log in and sign up buttons
+        // Create the log-in button
         Button btnLogin2 = new Button("Add player");
         btnLogin2.setPrefWidth(80);
         btnLogin2.setOnAction(e -> btnLogin2_Click(txtNewUser));
@@ -110,6 +120,7 @@ public class LogIn extends Application {
 
         sceneAddPlayer = new Scene(grid2);
 
+        //scene to show where the game would start for testing
         Text txtWelcome = new Text("Game");
         txtWelcome.setCache(true);
         txtWelcome.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
@@ -123,7 +134,12 @@ public class LogIn extends Application {
         sceneWelcome = new Scene(root, 500, 500);
     }
 
-
+    /**
+     * Handles the login button click event. opens the file storing all the usernames
+     * and when user is found it gets what level they are on.
+     *
+     * @param txtUsername The TextField for entering the username.
+     */
     public void btnLogin_Click(TextField txtUsername) {
         String username = txtUsername.getText();
         String fileName = "Users.txt";
@@ -152,7 +168,14 @@ public class LogIn extends Application {
         }
     }
 
-    public void btnLogin2_Click(TextField txtNewUser) {//check if playername already exists ??
+    /**
+     * Handles the add player button click event. if they want to add a player
+     * it checks if the player name exists and if not it add them to the file
+     * and starts them at level 1.
+     *
+     * @param txtNewUser The TextField for entering the new player's name.
+     */
+    public void btnLogin2_Click(TextField txtNewUser) {
         String username = txtNewUser.getText();
         String fileName = "Users.txt";
         Boolean found = false;
@@ -196,6 +219,14 @@ public class LogIn extends Application {
         }
     }
 
+    /**
+     * Logs in a user and returns a User object. Similar idea to the others it checks if the
+     * player exists if they do then it gets the level if not it adds the player
+     * to the file and starts them at level 1
+     *
+     * @param userName The username of the user to log in.
+     * @return A User object representing the logged-in user.
+     */
     public static User logInUser(String userName) {
         String fileName = "Users.txt";
         boolean found = false;
@@ -236,6 +267,14 @@ public class LogIn extends Application {
         return null;
     }
 
+
+    /**
+     * Updates user information in the "Users.txt" file.
+     *
+     * @param userName         The username of the user to update.
+     * @param highestLevelNum The highest level reached by the user.
+     * @param currentLevel     The current level of the user.
+     */
     public static void updateUser(String userName, int highestLevelNum, Level currentLevel) {
         String tempUsers = "tempUsers.txt";
         File oldFile = new File("Users.txt");
@@ -272,10 +311,18 @@ public class LogIn extends Application {
         }
     }
 
+    /**
+     * Handles the Add Player button click event.
+     */
     public void btnAddPlayer_Click() {
         stage.setScene(sceneAddPlayer);
     }
 
+    /**
+     * The main method that launches the JavaFX application.
+     *
+     * @param args The command-line arguments.
+     */
     public static void main(String[] args) {
         launch(args);
     }
