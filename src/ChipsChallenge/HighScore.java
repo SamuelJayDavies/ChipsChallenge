@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
 
+/* 
+ * The HighScore class is used to keep track of the top 10 scores per level, as well as the user who set the scores.
+ * It also reads and writes the score to a file so that they are persistent.
+ */
+
 public class HighScore {
-
     private int levelNum;
-
     private ArrayList<UserScore> highScore;
 
+    /**
+     * Constructor to create a new HighScore, creating a new arraylist for the specified level number.
+     * @param levelNum The number of the level the HighScore table refers to.
+     */
     public HighScore(int levelNum) {
         this.levelNum = levelNum;
         highScore = new ArrayList<>();
@@ -17,18 +24,29 @@ public class HighScore {
         highScore.sort(Comparator.comparingDouble(UserScore::getScore).reversed());
     }
 
-    // Return the current highscore
+    /**
+     * Returns the highest score of the current level.
+     * @return the current high score for the level.
+     */
     public double getCurrentHighscore(){
         return highScore.get(0).getScore();
     }
 
-    // Return the player with the current highscore
+    /**
+     * Returns the user who set the highest score of the current level.
+     * @return The username of the player who set the current high score.
+     */
     public String getCurrentHighscorePlayer(){
         return highScore.get(0).getUsername();
     }
     
-    // Check if a new score from a user beats the current highscore.
-    // Also checks if the array already has 10 elements and removes the smallest element
+    /**
+     * uploadNewScore checks if the provided score is in the top 10 for that level and inserts
+     * it in the array if it does beat another score.
+     * It then passes this array to the writeToScoreFile method in order to save the table.
+     * @param score The score the user achieved on the level.
+     * @param user  The user who achieved the score.
+     */
     public void uploadNewScore(double score, String user){
         UserScore newUserScore = new UserScore(user, score);
         if (highScore.size() == 10 && highScore.get(9).getScore() < score) {
@@ -44,11 +62,20 @@ public class HighScore {
         writeToScoreFile();
     }
 
-    // Return the entire scoreboard as an array of objects, storing the username and score.
+    /**
+     * Returns an array of the current scoreboard for the level, consisting of 
+     * UserScore objects, which contain the username and scores of the players.
+     * @return An array of the current levels top 10 scoreboard.
+     */
     public ArrayList<UserScore> getScoreboard(){
         return highScore;
     }
 
+    /**
+     * readInScoreFile loads the highscore table for the current level from the respective text file.
+     * It adds this back to the arrayList so that it can be used and read by other methods in the class.
+     * @return An array of UserScore objects containing usernames and scores of the top 10 scores.
+     */
     public ArrayList<UserScore> readInScoreFile() {
         String fileName = "HighscoreTableLevel" + levelNum + ".txt";
         File highScoreFile = new File(fileName);
@@ -70,9 +97,14 @@ public class HighScore {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-
     }
 
+    /**
+     * writeToScoreFile creates the text file and writes the current high score table to the file, 
+     * this ensures the scores are not lost when the program is stopped. It writes the username of the 
+     * player and the score they achieved.
+     * It creates a seperate text file for each level, as each level has it's own scoreboard.
+     */
     public void writeToScoreFile() {
         String tempHighScores = "tempHighScores.txt";
         File oldFile = new File("HighscoreTableLevel" + levelNum + ".txt");
@@ -99,6 +131,5 @@ public class HighScore {
             System.out.println("Problem");
         }
     }
-
 
 }
