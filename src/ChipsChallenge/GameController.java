@@ -20,10 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.Time;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -72,7 +69,7 @@ public class GameController extends Application {
 
     private int chipCount = 0;
 
-    private double currentTime = 120;
+    private double currentTime;
 
     public static User currentUser;
 
@@ -90,10 +87,16 @@ public class GameController extends Application {
 
     @FXML
     private void initialize() {
-        levelNumTxt.setText("level 1");
-        levelNameTxt.setText("They hunt in packs");
-        inventory = new ArrayList<>();
+        gameStart();
+    }
+
+    @FXML
+    private void gameStart() {
         testFileLoad();
+        levelNumTxt.setText("level " + currentLevel.getLevelNum());
+        levelNameTxt.setText(currentLevel.getLevelDesc());
+        inventory = new ArrayList<>();
+        currentTime = currentLevel.getLevelTime();
         drawGame();
         drawInventory();
         // For this tick timeline to have varying speed we need to store an internal tick count.
@@ -105,6 +108,12 @@ public class GameController extends Application {
         tickTimeline = new Timeline(new KeyFrame(Duration.millis(250), event -> tick()));
         tickTimeline.setCycleCount(Animation.INDEFINITE);
         tickTimeline.play();
+    }
+
+    @FXML
+    private void reset() {
+        tickTimeline.stop();
+        gameStart();
     }
 
     public void tick() {
@@ -120,7 +129,7 @@ public class GameController extends Application {
             if(currentTime == 0) {
                 try {
                     switchToDeathScreen(new ActionEvent());
-                    DeathScreenController.stage = stage;
+                    AfterScreenController.stage = stage;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -128,6 +137,7 @@ public class GameController extends Application {
         }
         movePlayer();
         moveMonsters(actorsToMove);
+        // Reset actors to move for next tick
         nextMove = null;
         drawGame();
     }
@@ -139,19 +149,20 @@ public class GameController extends Application {
 
     @FXML
     public void testFileLoad()  {
-        File myFile = new File("src/levels/level" + currentUser.getHighestLevelNum() + ".txt");
+        int currentLevel = currentUser.getHighestLevelNum() + 1;
+        File myFile = new File("src/levels/level" + currentLevel + ".txt");
         Scanner myReader = null;
         try {  // Change this to just throw fileNotFoundException and crash program
             myReader = new Scanner(myFile);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        String[] dimensionsArr = splitFile(myReader ,1)[0].split(",");
+        String[] infoArr = splitFile(myReader ,1)[0].split(",");
         String[][] layers = new String[5][1];
         for(int i=0; i<5; i++) {
-            layers[i] = splitFile(myReader, Integer.parseInt(dimensionsArr[1]));
+            layers[i] = splitFile(myReader, Integer.parseInt(infoArr[1]));
         }
-        this.currentLevel = new Level(Integer.parseInt(dimensionsArr[0]), Integer.parseInt(dimensionsArr[1]), layers);
+        this.currentLevel = new Level(Integer.parseInt(infoArr[0]), Integer.parseInt(infoArr[1]), Integer.parseInt(infoArr[2]), Integer.parseInt(infoArr[3]), infoArr[4], layers);
     }
 
     private String[] splitFile(Scanner levelFile, int height) {
@@ -313,8 +324,9 @@ public class GameController extends Application {
                 } else if(monster.getType() == ActorType.BUG && movingActors.contains(monster.getType())) {
                     Bug currentMonster = (Bug) monster;
                     int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
-                    int[] bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                     currentMonster.turnBug(1);
+                    int[] bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                    //currentMonster.turnBug(1);
                     int[] finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                     // Not sure if it's a problem but when a bug is left in open space 4x4 he will just circle around himself
                     // This is technically how he is expected to act though
@@ -322,12 +334,15 @@ public class GameController extends Application {
                     // Make him move forward or backwards next turn instead of turn his desired direction
                     if(finalPosition == originalPosition) {
                         currentMonster.turnBug(3);
+                        bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                         finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                         if(finalPosition == originalPosition) {
-                            currentMonster.turnBug(2);
+                            currentMonster.turnBug(1);
+                            bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                             finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                             if(finalPosition == originalPosition) {
-                                currentMonster.turnBug(1);
+                                currentMonster.turnBug(2);
+                                bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                                 finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                                 if(finalPosition == originalPosition) {
                                     // Don't Move
@@ -366,7 +381,7 @@ public class GameController extends Application {
                 if(!(actorTypeCollision == originalActor) && originalActor != ActorType.BLOCK && (actorTypeCollision == ActorType.PLAYER || originalActor == ActorType.PLAYER)) {
                     try {
                         switchToDeathScreen(new ActionEvent());
-                        DeathScreenController.stage = stage;
+                        AfterScreenController.stage = stage;
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -390,7 +405,7 @@ public class GameController extends Application {
                                 if(finalPosition == originalPosition) {
                                     try {
                                         switchToDeathScreen(new ActionEvent());
-                                        DeathScreenController.stage = stage;
+                                        AfterScreenController.stage = stage;
                                         // Big problem here, game logic is continuing when game should be finished
                                     } catch (IOException e) {
                                         throw new RuntimeException(e);
@@ -442,6 +457,9 @@ public class GameController extends Application {
                 if(actorType == ActorType.PLAYER || actorType == ActorType.BLOCK) {
                     nextMove = convertIceDirection(nextMove, collisionTileType);
                     int[] newerPosition = getNewPosition(position[0], position[1], nextMove);
+                    if(!isValidMove(newerPosition)) {
+                        return originalPosition;
+                    }
                     if(actorType == ActorType.PLAYER) {
                         collisionOccurredItem(position); // Bit of code repetition here
                     }
@@ -454,7 +472,7 @@ public class GameController extends Application {
                 if(actorType == ActorType.PLAYER) {
                     try {
                         switchToDeathScreen(new ActionEvent());
-                        DeathScreenController.stage = stage;
+                        AfterScreenController.stage = stage;
                         // Big problem here, game logic is continuing when game should be finished
                         tickTimeline.stop();
                         return originalPosition;
@@ -493,6 +511,26 @@ public class GameController extends Application {
                         getTileAt(position[0], position[1]);
                 currentButton.getLinkedTrap().setActive(true);
                 return position;
+            case EXIT:
+                // Calculate score here
+                // Put this in its own method
+                if(actorType == ActorType.PLAYER) {
+                    currentUser.setHighestLevelNum(currentLevel.getLevelNum());
+                    currentUser.setCurrentLevel(null);
+                    double score = currentTime * (chipCount + 1);
+                    HighScore currentHighScore = new HighScore(currentLevel.getLevelNum());
+                    currentHighScore.uploadNewScore(score, currentUser.getUserName());
+                    System.out.println(currentHighScore.getScoreboard());
+                    LogIn.updateUser(currentUser.getUserName(), currentUser.getHighestLevelNum(), currentUser.getCurrentLevel());
+                    try {
+                        switchToVictoryScreen(new ActionEvent());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    // For when block is pushed onto exit via ice
+                } else if(actorType == ActorType.BLOCK) {
+                    return originalPosition;
+                }
             default:
                 return position;
         }
@@ -559,21 +597,198 @@ public class GameController extends Application {
         for(int i=0; i<4; i++) {
             inventoryGc.drawImage(pathImg, i*50, 0);
         }
+        // COME BACK LATER CAN PICK UP MULTIPLE KEYS
         for(int i=0; i<inventory.size(); i++) {
             inventoryGc.drawImage(inventory.get(i).getImage(), i* 50, 0);
-            System.out.println(inventory.get(i).getType());
         }
     }
 
     public void switchToDeathScreen(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/death-screen.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/after-game.fxml"));
         tickTimeline.stop(); // Fix this later
+        AfterScreenController.isDead = false;
+        AfterScreenController.currentUser = currentUser;
+        AfterScreenController.stage = stage;
+        AfterScreenController.titleMsg = "Unlucky!";
+        AfterScreenController.message = "Would you like to play the try again";
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Unlucky");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
+
+    public void switchToVictoryScreen(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/after-game.fxml"));
+        tickTimeline.stop(); // Fix this later
+        AfterScreenController.currentUser = currentUser;
+        AfterScreenController.isDead = true;
+        // Could also add here high score passed into the victory screen, and if they beat any high scores what position
+        // they are now in
+        AfterScreenController.stage = stage;
+        AfterScreenController.titleMsg = "Congratulations!";
+        AfterScreenController.message = "Would you like to play the next level";
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setTitle("Congratulations!");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void switchToHighScore(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/highscore.fxml"));
+        tickTimeline.stop();
+        HighscoreController.levelNum = currentLevel.getLevelNum();
+        Scene scene = new Scene(fxmlLoader.load());
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow(); // Need this line for initalize
+        stage.setTitle("Highscore Table");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void switchToMainMenu(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/main-menu.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        MainMenuController.stage = stage;
+        stage.setTitle("Main Menu");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private void saveCurrentLevel() {
+        String tempCurrentLevels = "tempCurrentLevels.txt";
+        File oldFile = new File("SavedLevels.txt");
+        File newFile = new File(tempCurrentLevels);
+        try{
+            FileWriter fileWriter = new FileWriter(newFile, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            PrintWriter printWriter = new PrintWriter(bufferedWriter);
+            TileLayer tileLayer = currentLevel.getTileLayer();
+            for(int i=0; i<tileLayer.getTiles().length; i++) {
+                for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
+                    String tileStr = convertTileToString(tileLayer.getTileAt(j,i));
+                    printWriter.write(tileStr + ",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            ItemLayer itemLayer = currentLevel.getItemLayer();
+            for(int i=0; i<itemLayer.getItems().length; i++) {
+                for(int j=0; j<itemLayer.getItems()[0].length; j++) {
+                    String itemStr = convertItemToString(itemLayer.getItemAt(j,i));
+                    printWriter.write(itemStr + ",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            ActorLayer actorLayer = currentLevel.getActorLayer();
+            for(int i=0; i<actorLayer.getActors().length; i++) {
+                for(int j=0; j<actorLayer.getActors()[0].length; j++) {
+                    String actorStr = convertActorToString(actorLayer.getActor(j,i));
+                    printWriter.write(actorStr + ",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            printWriter.flush();
+            printWriter.close();
+            if(oldFile.delete()) {
+                File dump = new File("SavedLevels.txt");
+                if(!(newFile.renameTo(dump))) {
+                    System.out.println("New file couldn't be renamed");
+                }
+            } else {
+                System.out.println("Old file couldn't be deleted");
+            }
+        } catch(IOException e) {
+            System.out.println("Problem");
+        }
+    }
+
+    public String convertTileToString(Tile tile) {
+        switch(tile.getType()) {
+            case PATH:
+                return "p";
+            case DIRT:
+                return "di";
+            case WALL:
+                return "w";
+            case EXIT:
+                return "e";
+            case BUTTON:
+                return "b";
+            case TRAP:
+                return "t";
+            case WATER:
+                return "wt";
+            case ICE:
+                return "i";
+            case ICETR:
+                return "itr";
+            case ICETL:
+                return "itl";
+            case ICEBR:
+                return "ibr";
+            case ICEBL:
+                return "ibl";
+            case CHIPSOCKET:
+                ChipSocket currentTile = (ChipSocket) tile;
+                return "cs" + currentTile.getChipsRequired();
+            case DOOR:
+                Door currentDoor = (Door) tile;
+                char doorColour = currentDoor.getColour().toString().charAt(0);
+                return "d" + Character.toLowerCase(doorColour);
+            default:
+                // That should have covered every tile
+                return "ERROR";
+        }
+    }
+
+    public String convertItemToString(Item item) {
+        switch(item.getType()) {
+            case NOTHING:
+                return "n";
+            case KEY:
+                Key currentKey = (Key) item;
+                char doorColour = currentKey.getColour().toString().charAt(0);
+                return "k" + Character.toLowerCase(doorColour);
+            case CHIP:
+                return "c";
+            default:
+                // Every case should have been covered
+                return "ERROR";
+        }
+    }
+
+    public String convertActorToString(Actor actor) {
+        switch(actor.getType()) {
+            case NOACTOR:
+                return "n";
+            case PLAYER:
+                return "p";
+            case PINKBALL:
+                return "pb";
+            case BLOCK:
+                return "bl";
+            case BUG:
+                return "b";
+            case FROG:
+                return "f";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+
 
     public static void main(String[] args) {
         launch(args);

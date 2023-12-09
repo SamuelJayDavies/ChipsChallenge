@@ -41,17 +41,22 @@
          <children>
             <HBox alignment="BOTTOM_LEFT" prefHeight="69.0" prefWidth="687.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#testMethod" text="Reset">
+                  <Button mnemonicParsing="false" onAction="#reset" text="Reset">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="saveBtn" mnemonicParsing="false" onAction="#testFileLoad" text="Save">
+                  <Button fx:id="saveReturnBtn" mnemonicParsing="false" onAction="#saveCurrentLevel" text="Save/Return">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="saveReturnBtn" mnemonicParsing="false" onAction="#drawGame" text="Save/Return">
+                  <Button mnemonicParsing="false" onAction="#switchToHighScore" text="Highscores">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="exitBtn" mnemonicParsing="false" onAction="#switchToMainMenu" text="Exit">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" />
                      </HBox.margin>
@@ -80,12 +85,12 @@
             </HBox>
          </children>
       </HBox>
-      <AnchorPane layoutX="-1.0" layoutY="113.0" prefHeight="348.0" prefWidth="1000.0" style="-fx-border-color: black;">
+      <AnchorPane layoutX="-1.0" layoutY="113.0" prefHeight="348.0" prefWidth="1000.0">
          <children>
             <Canvas fx:id="mainCanvas" height="348.0" layoutX="86.0" layoutY="-1.0" width="784.0" />
          </children>
       </AnchorPane>
-      <HBox alignment="CENTER" layoutX="679.0" layoutY="477.0" prefHeight="50.0" prefWidth="200.0" style="-fx-border-color: black;">
+      <HBox alignment="CENTER" layoutX="625.0" layoutY="477.0" prefHeight="50.0" prefWidth="200.0" style="-fx-border-color: black;">
          <children>
             <Canvas fx:id="inventoryCanvas" height="50.0" width="200.0" />
          </children>

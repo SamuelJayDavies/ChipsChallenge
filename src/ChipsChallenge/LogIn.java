@@ -218,7 +218,7 @@ public class LogIn extends Application {
                 try {// if player doesnt exist add a new player
                     FileWriter fileWriter = new FileWriter(fileName, true);
                     BufferedWriter info = new BufferedWriter(fileWriter);
-                    info.write(userName + ",1");
+                    info.write(userName + ",0");
                     info.newLine();
                     info.close();
                     System.out.println("Successfully wrote to the file.");
@@ -227,13 +227,49 @@ public class LogIn extends Application {
                     e.printStackTrace();
                 }
                 in.close();
-                return new User(userName, 1);
+                return new User(userName, 0);
             }
             in.close();
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + fileName);
         }
         return null;
+    }
+
+    public static void updateUser(String userName, int highestLevelNum, Level currentLevel) {
+        String tempUsers = "tempUsers.txt";
+        File oldFile = new File("Users.txt");
+        File newFile = new File(tempUsers);
+        try{
+            FileWriter fileWriter = new FileWriter(newFile, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            PrintWriter printWriter = new PrintWriter(bufferedWriter);
+            Scanner scanner = new Scanner(new File("Users.txt"));
+
+            while(scanner.hasNextLine()) {
+                String[] parts = scanner.nextLine().split(",");
+                if(parts[0].equals(userName)) {
+                    printWriter.write(userName + "," + highestLevelNum);
+                    // Add level here later
+                } else {
+                    printWriter.write(parts[0] + "," + parts[1]);
+                }
+                printWriter.write("\n");
+            }
+            scanner.close();
+            printWriter.flush();
+            printWriter.close();
+            if(oldFile.delete()) {
+                File dump = new File("Users.txt");
+                if(!(newFile.renameTo(dump))) {
+                    System.out.println("New file couldn't be renamed");
+                }
+            } else {
+                System.out.println("Old file couldn't be deleted");
+            }
+        } catch(IOException e) {
+            System.out.println("Problem");
+        }
     }
 
     public void btnAddPlayer_Click() {

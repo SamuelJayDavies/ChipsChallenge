@@ -2,10 +2,15 @@ package ChipsChallenge;
 
 import javafx.scene.image.Image;
 
-import java.util.Random;
-
+/**
+ * The Frog class represents a type of monster in the game Chips Challenge.
+ * Frogs move randomly within the game world based on their AI behavior.
+ */
 public class Frog extends Actor {
 
+    /**
+     * Constructs a new Frog instance with the FROG type and a default image.
+     */
     public Frog() {
         super(ActorType.FROG, new Image("null"));
     }
@@ -37,19 +42,21 @@ public class Frog extends Actor {
 
             if (canMove(nextX, nextY, actorLayer)) {
                 actorLayer.updateActor(this, nextX, nextY);
-                break; 
+                break;
             }
         }
     }
 
     /**
      * Checks whether the Frog can move to the specified coordinates.
-     * The Frog cannot move to positions occupied by blocking tiles, other Frogs, or out-of-bounds positions.
+     * The Frog cannot move to positions occupied by blocking tiles,
+     * other Frogs, or out-of-bounds positions.
      *
      * @param newX       The x-coordinate of the target position.
      * @param newY       The y-coordinate of the target position.
      * @param actorLayer The layer containing all actors in the game.
-     * @return True if the Frog can move to the target position, false otherwise.
+     * @return True if the Frog can move to the
+     * target position, false otherwise.
      */
     private boolean canMove(int newX, int newY, ActorLayer actorLayer) {
         if (!actorLayer.validPosition(newX, newY)) {
@@ -66,12 +73,6 @@ public class Frog extends Actor {
         }
         return true;
     }
-
-    /**
-     * Shuffle a 2D array.
-     *
-     * @param array The array to shuffle.
-     */
     /*
     private void shuffleArray(int[][] array) {
         Random rand = new Random();
