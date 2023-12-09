@@ -8,6 +8,10 @@ public class Trap extends Tile {
 
     private Button linkedButton;
 
+    private int x;
+
+    private int y;
+
     public Trap() {
         super(TileType.TRAP, new Image("images/stuff/trap v2.png"));
         active = false;
@@ -27,6 +31,22 @@ public class Trap extends Tile {
 
     public void setLinkedButton(Button linkedButton) {
         this.linkedButton = linkedButton;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     @Override

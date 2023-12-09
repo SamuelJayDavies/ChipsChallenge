@@ -22,6 +22,7 @@ import javafx.util.Duration;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class GameController extends Application {
@@ -657,6 +658,27 @@ public class GameController extends Application {
         stage.show();
     }
 
+    /*
+    private ArrayList<SavedLevel> readInSavedLevels() {
+        String fileName = "SavedLevels.txt";
+        File savedLevelsFile = new File(fileName);
+        try{
+            savedLevelsFile.createNewFile();
+        } catch(IOException e) {
+            System.out.println(e.getMessage());
+        }
+        ArrayList<SavedLevel> savedLevels = new ArrayList<>();
+        try{
+            Scanner in = new Scanner(savedLevelsFile);
+            while(in.hasNextLine()) {
+
+            }
+        } catch(FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+     */
+
     @FXML
     private void saveCurrentLevel() {
         String tempCurrentLevels = "tempCurrentLevels.txt";
@@ -666,7 +688,16 @@ public class GameController extends Application {
             FileWriter fileWriter = new FileWriter(newFile, true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             PrintWriter printWriter = new PrintWriter(bufferedWriter);
+
             TileLayer tileLayer = currentLevel.getTileLayer();
+            printWriter.write(tileLayer.getTiles()[0].length + "," + tileLayer.getTiles().length + "," +
+                    currentLevel.getLevelTime() + "," + currentLevel.getLevelNum() + "," + currentLevel.getLevelDesc() + "\n");
+            printWriter.write(currentUser.getUserName() + "," + currentTime + "," + chipCount + "\n");
+            for(Key key: inventory) {
+                printWriter.write(convertItemToString(key) + ",");
+            }
+            printWriter.write("\n");
+
             for(int i=0; i<tileLayer.getTiles().length; i++) {
                 for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
                     String tileStr = convertTileToString(tileLayer.getTileAt(j,i));
@@ -693,6 +724,47 @@ public class GameController extends Application {
                 for(int j=0; j<actorLayer.getActors()[0].length; j++) {
                     String actorStr = convertActorToString(actorLayer.getActor(j,i));
                     printWriter.write(actorStr + ",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            for(int i=0; i<tileLayer.getTiles().length; i++) {
+                for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
+                    if(tileLayer.getTileAt(j,i).getType() == TileType.BUTTON) {
+                        ChipsChallenge.Button button = (ChipsChallenge.Button) tileLayer.getTileAt(j,i);
+                        printWriter.write(button.getLinkedTrap().getX() + ":" + button.getLinkedTrap().getY());
+                    } else {
+                        printWriter.write("n");
+                    }
+                    printWriter.write(",");
+                }
+                printWriter.write("\n");
+            }
+
+            printWriter.write("\n");
+
+            String[][] actorDetails = new String[actorLayer.getActors().length][actorLayer.getActors()[0].length];
+            for(int i=0; i<actorDetails.length; i++) {
+                for(int j=0; j<actorDetails[0].length; j++) {
+                    actorDetails[i][j] = "n";
+                }
+            }
+            for(Actor monster: actorLayer.getMonsters()) {
+                if(monster.getType() == ActorType.PINKBALL) {
+                    PinkBall ball = (PinkBall) monster;
+                    actorDetails[ball.getY()][ball.getX()] = convertDirectionToString(ball.getDirection());
+                } else if(monster.getType() == ActorType.BUG) {
+                    Bug bug = (Bug) monster;
+                    actorDetails[bug.getY()][bug.getX()] = convertDirectionToString(bug.getFollowDirection()) + ":" +
+                            convertDirectionToString(bug.getDirection());
+                }
+            }
+
+            for(int i=0; i<actorDetails.length; i++) {
+                for(int j=0; j<actorDetails[0].length; j++) {
+                    printWriter.write(actorDetails[i][j] + ",");
                 }
                 printWriter.write("\n");
             }
@@ -783,6 +855,21 @@ public class GameController extends Application {
                 return "b";
             case FROG:
                 return "f";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public String convertDirectionToString(KeyCode direction) {
+        switch(direction) {
+            case D:
+                return "right";
+            case A:
+                return "left";
+            case W:
+                return "up";
+            case S:
+                return "down";
             default:
                 throw new IllegalArgumentException();
         }

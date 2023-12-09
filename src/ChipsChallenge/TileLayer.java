@@ -98,6 +98,8 @@ public class TileLayer {
             Trap currentTrap = (Trap) getTileAt(x, y);
             currentButton.setLinkedTrap(currentTrap);
             currentTrap.setLinkedButton(currentButton);
+            currentTrap.setX(x);
+            currentTrap.setY(y);
         }
     }
 }
