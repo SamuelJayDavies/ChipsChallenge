@@ -27,7 +27,7 @@ ajwoawt,0
 iwoketo,0
 lgaseg,0
 lskerg,0
-test,0
+test,2
 awdawd,0
 dawd,0
 safaw,0
@@ -49,3 +49,16 @@ kawtwt,0
 natalie,3
 alowd,0
 john,0
+mawd,0
+gg,1
+ggg,1
+worst,0
+gwg,1
+dw,0
+tawt,0
+t,1
+Best,1
+Better,1
+Liam,2
+mdwd,0
+wd,0

@@ -625,7 +625,7 @@ public class GameController extends Application {
     public void switchToDeathScreen(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/after-game.fxml"));
         tickTimeline.stop(); // Fix this later
-        AfterScreenController.isDead = false;
+        AfterScreenController.isDead = true;
         AfterScreenController.currentUser = currentUser;
         AfterScreenController.stage = stage;
         AfterScreenController.titleMsg = "Unlucky!";
@@ -641,7 +641,7 @@ public class GameController extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/after-game.fxml"));
         tickTimeline.stop(); // Fix this later
         AfterScreenController.currentUser = currentUser;
-        AfterScreenController.isDead = true;
+        AfterScreenController.isDead = false;
         // Could also add here high score passed into the victory screen, and if they beat any high scores what position
         // they are now in
         AfterScreenController.stage = stage;
@@ -657,6 +657,8 @@ public class GameController extends Application {
     public void switchToHighScore(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/highscore.fxml"));
         tickTimeline.stop();
+        HighscoreController.currentUser = currentUser;
+        HighscoreController.stage = stage;
         HighscoreController.levelNum = currentLevel.getLevelNum();
         Scene scene = new Scene(fxmlLoader.load());
         stage = (Stage)((Node)event.getSource()).getScene().getWindow(); // Need this line for initalize
