@@ -5,3 +5,4 @@ test,1184.0
 natalie,592.0
 numberTest,297.0
 gawwee,297.0
+brandNewUser,295.0

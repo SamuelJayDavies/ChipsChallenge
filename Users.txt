@@ -86,3 +86,5 @@ asd,0
 dwd,0
 awdd,0
 dsa,0
+brandNewUser,5
+asd d,0

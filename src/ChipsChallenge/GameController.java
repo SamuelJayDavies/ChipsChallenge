@@ -92,9 +92,48 @@ public class GameController extends Application {
         gameStart();
     }
 
+    public void loadLevelFile()  {
+        ArrayList<SavedLevel> savedLevels = readInSavedLevels();
+        for(SavedLevel savedLevel: savedLevels) {
+            if(savedLevel.getUsername().equals(currentUser.getUserName())) {
+                this.currentLevel = savedLevel.getLevel();
+                isSavedLevel = true;
+                inventory = savedLevel.getInventory();
+                currentTime = savedLevel.getCurrentTime();
+                chipCount = savedLevel.getChipCount();
+            }
+        }
+
+        if(currentLevel == null) {
+            nextLevelLoad();
+        }
+    }
+
+    public void nextLevelLoad() {
+        int currentLevel = currentUser.getHighestLevelNum() + 1;
+        File myFile = new File("src/levels/level" + currentLevel + ".txt");
+        Scanner myReader = null;
+        try {  // Change this to just throw fileNotFoundException and crash program
+            myReader = new Scanner(myFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        String[] infoArr = FileHandling.splitFile(myReader ,1)[0].split(",");
+        String[][] layers = new String[5][1];
+        for(int i=0; i<5; i++) {
+            layers[i] = FileHandling.splitFile(myReader, Integer.parseInt(infoArr[1]));
+        }
+        this.currentLevel = new Level(Integer.parseInt(infoArr[0]), Integer.parseInt(infoArr[1]),
+                Integer.parseInt(infoArr[2]), Integer.parseInt(infoArr[3]), infoArr[4], layers);
+    }
+
     @FXML
     private void gameStart() {
-        testFileLoad();
+        if(currentLevel != null) {
+            nextLevelLoad();
+        } else {
+            loadLevelFile();
+        }
         levelNumTxt.setText("level " + currentLevel.getLevelNum());
         levelNameTxt.setText(currentLevel.getLevelDesc());
         if(!isSavedLevel) {
@@ -103,12 +142,6 @@ public class GameController extends Application {
         }
         drawGame();
         drawInventory();
-        // For this tick timeline to have varying speed we need to store an internal tick count.
-        // Each tick will increment the tick count and certain actors will move on specific tick counts
-        // Player and Pink Ball will move on tick count 2 -> 500ms
-        // Bug will move on tick count 3 -> 750ms
-        // Frog will move on tick count 4 -> 1000ms
-        // After this the count is reset back to 1.
         tickTimeline = new Timeline(new KeyFrame(Duration.millis(250), event -> tick()));
         tickTimeline.setCycleCount(Animation.INDEFINITE);
         tickTimeline.play();
@@ -145,62 +178,9 @@ public class GameController extends Application {
         }
         movePlayer();
         moveMonsters(actorsToMove);
-        // Reset actors to move for next tick
+        // Reset player to move for next tick
         nextMove = null;
         drawGame();
-    }
-
-    @FXML
-    public void testMethod() {
-        Game.testFunction();
-    }
-
-    @FXML
-    public void testFileLoad()  {
-        ArrayList<SavedLevel> savedLevels = readInSavedLevels();
-        for(SavedLevel savedLevel: savedLevels) {
-            if(savedLevel.getUsername().equals(currentUser.getUserName())) {
-                this.currentLevel = savedLevel.getLevel();
-                isSavedLevel = true;
-                inventory = savedLevel.getInventory();
-                currentTime = savedLevel.getCurrentTime();
-                chipCount = savedLevel.getChipCount();
-            }
-        }
-
-        if(currentLevel == null) {
-            int currentLevel = currentUser.getHighestLevelNum() + 1;
-            File myFile = new File("src/levels/level" + currentLevel + ".txt");
-            Scanner myReader = null;
-            try {  // Change this to just throw fileNotFoundException and crash program
-                myReader = new Scanner(myFile);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            String[] infoArr = splitFile(myReader ,1)[0].split(",");
-            String[][] layers = new String[5][1];
-            for(int i=0; i<5; i++) {
-                layers[i] = splitFile(myReader, Integer.parseInt(infoArr[1]));
-            }
-            this.currentLevel = new Level(Integer.parseInt(infoArr[0]), Integer.parseInt(infoArr[1]),
-                    Integer.parseInt(infoArr[2]), Integer.parseInt(infoArr[3]), infoArr[4], layers);
-        }
-    }
-
-    private String[] splitFile(Scanner levelFile, int height) {
-        String[] tileArr = new String[height];
-        boolean layerFinished = false;
-        int i = 0;
-        while(!layerFinished) {
-            String nextLine = levelFile.nextLine();
-            if(!(nextLine.equals(""))) {
-                tileArr[i] = nextLine;
-                i++;
-            } else {
-                layerFinished = true;
-            }
-        }
-        return tileArr;
     }
 
     @FXML
@@ -216,7 +196,7 @@ public class GameController extends Application {
                     gc.drawImage(new Image("images/stuff/" + cs.getChipsRequired() + ".png"), j * 50, i * 50);
                 }
             }
-        } // Make these for loops into a method
+        } // Make these for loops into a method COME BACK TO THIS
         Item[][] itemLayerGraphics = currentLevel.getItemLayer().getItems(); // Need to make this more efficient, far to slow
         for(int i=0; i<itemLayerGraphics.length; i++) {
             for(int j=0; j<itemLayerGraphics[i].length; j++) {
@@ -241,9 +221,7 @@ public class GameController extends Application {
 
     @FXML
     public void storeKeyEvent(KeyEvent event) {
-        // We change the behaviour depending on the actual key that was pressed.
         nextMove = event.getCode();
-        // Consume the event. This means we mark it as dealt with. This stops other GUI nodes (buttons etc) responding to it.
         event.consume();
     }
 
@@ -742,6 +720,16 @@ public class GameController extends Application {
         for(int i=0; i<4; i++) {
             inventoryGc.drawImage(pathImg, i*50, 0);
         }
+        Iterator<Key> condensedInventory = this.inventory.iterator();
+        ArrayList<Colour> seenColours = new ArrayList<>();
+        while(condensedInventory.hasNext()) {
+            Key key = condensedInventory.next();
+            if(seenColours.contains(key.getColour())) {
+                condensedInventory.remove();
+            } else {
+                seenColours.add(key.getColour());
+            }
+        }
         // COME BACK LATER CAN PICK UP MULTIPLE KEYS
         for(int i=0; i<inventory.size(); i++) {
             inventoryGc.drawImage(inventory.get(i).getImage(), i* 50, 0);
@@ -843,11 +831,11 @@ public class GameController extends Application {
                     if(!firstLine.equals("next")) {
                         infoArr = new String[3];
                         infoArr[0] = firstLine;
-                        String[] afterArr = splitFile(in, 2);
+                        String[] afterArr = FileHandling.splitFile(in, 2);
                         infoArr[1] = afterArr[0];
                         infoArr[2] = afterArr[1];
                     } else {
-                        infoArr = splitFile(in, 3);
+                        infoArr = FileHandling.splitFile(in, 3);
                     }
                     String[] originalLevelArr = infoArr[0].split(",");
                     String[] newLevelArr = infoArr[1].split(",");
@@ -862,7 +850,7 @@ public class GameController extends Application {
 
                     String[][] layers = new String[5][1];
                     for(int i=0; i<5; i++) {
-                        layers[i] = splitFile(in, Integer.parseInt(originalLevelArr[1]));
+                        layers[i] = FileHandling.splitFile(in, Integer.parseInt(originalLevelArr[1]));
                     }
                     Level originalLevel = new Level(Integer.parseInt(originalLevelArr[0]), Integer.parseInt(originalLevelArr[1]),
                             Integer.parseInt(originalLevelArr[2]), Integer.parseInt(originalLevelArr[3]), originalLevelArr[4], layers);
