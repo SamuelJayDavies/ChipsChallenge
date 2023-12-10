@@ -77,6 +77,7 @@ public class GameController extends Application {
     public static User currentUser;
 
     private int currentTick = 0;
+    private boolean levelFinished = false;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -647,6 +648,17 @@ public class GameController extends Application {
         AfterScreenController.stage = stage;
         AfterScreenController.titleMsg = "Congratulations!";
         AfterScreenController.message = "Would you like to play the next level";
+        SavedLevel currentSavedLevel = null;
+        for(SavedLevel saved: savedLevels) {
+            if(saved.getUsername().equals(currentUser.getUserName())) {
+                currentSavedLevel = saved;
+            }
+        }
+        if(currentSavedLevel != null) {
+            savedLevels.remove(currentSavedLevel);
+        }
+        levelFinished = true;
+        saveCurrentLevel();
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Congratulations!");
         stage.setResizable(false);
@@ -670,6 +682,7 @@ public class GameController extends Application {
 
     public void switchToMainMenu(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/main-menu.fxml"));
+        tickTimeline.stop();
         Scene scene = new Scene(fxmlLoader.load());
         MainMenuController.stage = stage;
         stage.setTitle("Main Menu");
@@ -678,38 +691,71 @@ public class GameController extends Application {
         stage.show();
     }
 
+    // Move Later
+    ArrayList<SavedLevel> savedLevels;
+
     private ArrayList<SavedLevel> readInSavedLevels() {
         String fileName = "SavedLevels.txt";
         File savedLevelsFile = new File(fileName);
+        boolean isFinished = false;
         try{
             savedLevelsFile.createNewFile();
         } catch(IOException e) {
             System.out.println(e.getMessage());
         }
         ArrayList<SavedLevel> savedLevels = new ArrayList<>();
-        try{
-            Scanner in = new Scanner(savedLevelsFile);
-            String[] infoArr = splitFile(in, 3);
-            String[] originalLevelArr = infoArr[0].split(",");
-            String[] newLevelArr = infoArr[1].split(",");
-            String[] inventoryArr = infoArr[2].split(",");
-            ArrayList<Key> currentInventory = new ArrayList<>();
-            for(String key: inventoryArr) {
-                currentInventory.add(new Key(key.charAt(1)));
-            }
-
-            String[][] layers = new String[5][1];
-            for(int i=0; i<5; i++) {
-                layers[i] = splitFile(in, Integer.parseInt(originalLevelArr[1]));
-            }
-            Level originalLevel = new Level(Integer.parseInt(originalLevelArr[0]), Integer.parseInt(originalLevelArr[1]),
-                    Integer.parseInt(originalLevelArr[2]), Integer.parseInt(originalLevelArr[3]), originalLevelArr[4], layers);
-            SavedLevel savedLevel = new SavedLevel(newLevelArr[0], Integer.parseInt(newLevelArr[1]),
-                    Integer.parseInt(newLevelArr[2]), currentInventory, originalLevel);
-            savedLevels.add(savedLevel);
-        } catch(FileNotFoundException e) {
+        Scanner in;
+        try {
+            in = new Scanner(savedLevelsFile);
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+        do {
+                // For when there are no saved levels
+                if(in.hasNextLine()) {
+                    String firstLine = in.nextLine();
+                    String[] infoArr;
+                    if(!firstLine.equals("next")) {
+                        infoArr = new String[3];
+                        infoArr[0] = firstLine;
+                        String[] afterArr = splitFile(in, 2);
+                        infoArr[1] = afterArr[0];
+                        infoArr[2] = afterArr[1];
+                    } else {
+                        infoArr = splitFile(in, 3);
+                    }
+                    String[] originalLevelArr = infoArr[0].split(",");
+                    String[] newLevelArr = infoArr[1].split(",");
+                    ArrayList<Key> currentInventory = new ArrayList<>();
+                    if(!(infoArr[2] == null)) {
+                        String[] inventoryArr = infoArr[2].split(",");
+                        currentInventory = new ArrayList<>();
+                        for(String key: inventoryArr) {
+                            currentInventory.add(new Key(key.charAt(1)));
+                        }
+                    }
+
+                    String[][] layers = new String[5][1];
+                    for(int i=0; i<5; i++) {
+                        layers[i] = splitFile(in, Integer.parseInt(originalLevelArr[1]));
+                    }
+                    Level originalLevel = new Level(Integer.parseInt(originalLevelArr[0]), Integer.parseInt(originalLevelArr[1]),
+                            Integer.parseInt(originalLevelArr[2]), Integer.parseInt(originalLevelArr[3]), originalLevelArr[4], layers);
+                    SavedLevel savedLevel = new SavedLevel(newLevelArr[0], Integer.parseInt(newLevelArr[1]),
+                            Integer.parseInt(newLevelArr[2]), currentInventory, originalLevel);
+                    savedLevels.add(savedLevel);
+                } else {
+                    in.close();
+                    this.savedLevels = savedLevels;
+                    return savedLevels;
+                }
+                String finishResult = in.nextLine();
+                if(finishResult.equals("end")) {
+                    isFinished = true;
+                }
+        } while(!isFinished);
+        in.close();
+        this.savedLevels = savedLevels;
         return savedLevels;
     }
 
@@ -723,87 +769,26 @@ public class GameController extends Application {
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             PrintWriter printWriter = new PrintWriter(bufferedWriter);
 
-            TileLayer tileLayer = currentLevel.getTileLayer();
-            printWriter.write(tileLayer.getTiles()[0].length + "," + tileLayer.getTiles().length + "," +
-                    currentLevel.getLevelTime() + "," + currentLevel.getLevelNum() + "," + currentLevel.getLevelDesc() + "\n");
-            printWriter.write(currentUser.getUserName() + "," + currentTime + "," + chipCount + "\n");
-            for(Key key: inventory) {
-                printWriter.write(convertItemToString(key) + ",");
-            }
-            printWriter.write("\n");
+            // Save newest level
+            SavedLevel newestSave = new SavedLevel(currentUser.getUserName(), currentTime, chipCount, inventory, currentLevel);
 
-            for(int i=0; i<tileLayer.getTiles().length; i++) {
-                for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
-                    String tileStr = convertTileToString(tileLayer.getTileAt(j,i));
-                    printWriter.write(tileStr + ",");
-                }
-                printWriter.write("\n");
-            }
+            boolean isNewSave = true;
 
-            printWriter.write("\n");
-
-            ItemLayer itemLayer = currentLevel.getItemLayer();
-            for(int i=0; i<itemLayer.getItems().length; i++) {
-                for(int j=0; j<itemLayer.getItems()[0].length; j++) {
-                    String itemStr = convertItemToString(itemLayer.getItemAt(j,i));
-                    printWriter.write(itemStr + ",");
-                }
-                printWriter.write("\n");
-            }
-
-            printWriter.write("\n");
-
-            ActorLayer actorLayer = currentLevel.getActorLayer();
-            for(int i=0; i<actorLayer.getActors().length; i++) {
-                for(int j=0; j<actorLayer.getActors()[0].length; j++) {
-                    String actorStr = convertActorToString(actorLayer.getActor(j,i));
-                    printWriter.write(actorStr + ",");
-                }
-                printWriter.write("\n");
-            }
-
-            printWriter.write("\n");
-
-            for(int i=0; i<tileLayer.getTiles().length; i++) {
-                for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
-                    if(tileLayer.getTileAt(j,i).getType() == TileType.BUTTON) {
-                        ChipsChallenge.Button button = (ChipsChallenge.Button) tileLayer.getTileAt(j,i);
-                        printWriter.write(button.getLinkedTrap().getX() + ":" + button.getLinkedTrap().getY());
-                    } else {
-                        printWriter.write("n");
-                    }
-                    printWriter.write(",");
-                }
-                printWriter.write("\n");
-            }
-
-            printWriter.write("\n");
-
-            String[][] actorDetails = new String[actorLayer.getActors().length][actorLayer.getActors()[0].length];
-            for(int i=0; i<actorDetails.length; i++) {
-                for(int j=0; j<actorDetails[0].length; j++) {
-                    actorDetails[i][j] = "n";
-                }
-            }
-            for(Actor monster: actorLayer.getMonsters()) {
-                if(monster.getType() == ActorType.PINKBALL) {
-                    PinkBall ball = (PinkBall) monster;
-                    actorDetails[ball.getY()][ball.getX()] = convertDirectionToString(ball.getDirection());
-                } else if(monster.getType() == ActorType.BUG) {
-                    Bug bug = (Bug) monster;
-                    actorDetails[bug.getY()][bug.getX()] = convertDirectionToString(bug.getFollowDirection()) + ":" +
-                            convertDirectionToString(bug.getDirection());
+            for(SavedLevel savedLevel: savedLevels) {
+                if(savedLevel.getUsername().equals(newestSave.getUsername())) {
+                    writeToFile(printWriter, newestSave);
+                    isNewSave = false;
+                } else {
+                    writeToFile(printWriter, savedLevel);
                 }
             }
 
-            for(int i=0; i<actorDetails.length; i++) {
-                for(int j=0; j<actorDetails[0].length; j++) {
-                    printWriter.write(actorDetails[i][j] + ",");
-                }
-                printWriter.write("\n");
+            // For first time saves and new saves
+            if(isNewSave && !levelFinished) {
+                writeToFile(printWriter, newestSave);
             }
 
-            printWriter.write("\n");
+            printWriter.write("end");
 
             printWriter.flush();
             printWriter.close();
@@ -818,6 +803,96 @@ public class GameController extends Application {
         } catch(IOException e) {
             System.out.println("Problem");
         }
+    }
+
+    private void writeToFile(PrintWriter printWriter, SavedLevel savedLevel) {
+        Level currentLevel = savedLevel.getLevel();
+        TileLayer tileLayer = currentLevel.getTileLayer();
+        printWriter.write("next\n");
+        printWriter.write(tileLayer.getTiles()[0].length + "," + tileLayer.getTiles().length + "," +
+                currentLevel.getLevelTime() + "," + currentLevel.getLevelNum() + "," + currentLevel.getLevelDesc() + "\n");
+        printWriter.write(savedLevel.getUsername() + "," + savedLevel.getCurrentTime() + "," + savedLevel.getChipCount() + "\n");
+        for(Key key: savedLevel.getInventory()) {
+            printWriter.write(convertItemToString(key) + ",");
+        }
+        if(savedLevel.getInventory().isEmpty()) {
+            printWriter.write("\n");
+        } else {
+            printWriter.write("\n\n");
+        }
+
+        for(int i=0; i<tileLayer.getTiles().length; i++) {
+            for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
+                String tileStr = convertTileToString(tileLayer.getTileAt(j,i));
+                printWriter.write(tileStr + ",");
+            }
+            printWriter.write("\n");
+        }
+
+        printWriter.write("\n");
+
+        ItemLayer itemLayer = currentLevel.getItemLayer();
+        for(int i=0; i<itemLayer.getItems().length; i++) {
+            for(int j=0; j<itemLayer.getItems()[0].length; j++) {
+                String itemStr = convertItemToString(itemLayer.getItemAt(j,i));
+                printWriter.write(itemStr + ",");
+            }
+            printWriter.write("\n");
+        }
+
+        printWriter.write("\n");
+
+        ActorLayer actorLayer = currentLevel.getActorLayer();
+        for(int i=0; i<actorLayer.getActors().length; i++) {
+            for(int j=0; j<actorLayer.getActors()[0].length; j++) {
+                String actorStr = convertActorToString(actorLayer.getActor(j,i));
+                printWriter.write(actorStr + ",");
+            }
+            printWriter.write("\n");
+        }
+
+        printWriter.write("\n");
+
+        for(int i=0; i<tileLayer.getTiles().length; i++) {
+            for(int j=0; j<tileLayer.getTiles()[0].length; j++) {
+                if(tileLayer.getTileAt(j,i).getType() == TileType.BUTTON) {
+                    ChipsChallenge.Button button = (ChipsChallenge.Button) tileLayer.getTileAt(j,i);
+                    printWriter.write(button.getLinkedTrap().getX() + ":" + button.getLinkedTrap().getY());
+                } else {
+                    printWriter.write("n");
+                }
+                printWriter.write(",");
+            }
+            printWriter.write("\n");
+        }
+
+        printWriter.write("\n");
+
+        String[][] actorDetails = new String[actorLayer.getActors().length][actorLayer.getActors()[0].length];
+        for(int i=0; i<actorDetails.length; i++) {
+            for(int j=0; j<actorDetails[0].length; j++) {
+                actorDetails[i][j] = "n";
+            }
+        }
+        for(Actor monster: actorLayer.getMonsters()) {
+            if(monster.getType() == ActorType.PINKBALL) {
+                PinkBall ball = (PinkBall) monster;
+                actorDetails[ball.getY()][ball.getX()] = convertDirectionToString(ball.getDirection());
+            } else if(monster.getType() == ActorType.BUG) {
+                Bug bug = (Bug) monster;
+                actorDetails[bug.getY()][bug.getX()] = convertDirectionToString(bug.getFollowDirection()) + ":" +
+                        convertDirectionToString(bug.getDirection());
+            }
+        }
+
+        for(int i=0; i<actorDetails.length; i++) {
+            for(int j=0; j<actorDetails[0].length; j++) {
+                printWriter.write(actorDetails[i][j] + ",");
+            }
+            printWriter.write("\n");
+        }
+
+        printWriter.write("\n");
     }
 
     public String convertTileToString(Tile tile) {

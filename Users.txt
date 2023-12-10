@@ -62,3 +62,17 @@ Better,1
 Liam,2
 mdwd,0
 wd,0
+testFileLoad,0
+TestFileLoad,0
+TestingAgain,0
+TestingFileLoad,0
+Test1,0
+test1,0
+test2,1
+ggw,0
+bkf,0
+bks,0
+gawwee,3
+gawwe,0
+gawwwe,0
+btbt,1
