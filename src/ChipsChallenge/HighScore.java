@@ -49,9 +49,11 @@ public class HighScore {
      */
     public void uploadNewScore(double score, String user){
         UserScore newUserScore = new UserScore(user, score);
+        // If scoreboard is already full, remove lowest score and replace with new score.
         if (highScore.size() == 10 && highScore.get(9).getScore() < score) {
             highScore.remove(9);
         }
+        // If scoreboard has less that 10 elements, add new score to the list in the corresponding position.
         if (highScore.size() < 10) {
             int i = 0;
             while (i < highScore.size() && highScore.get(i).getScore() > score) {
