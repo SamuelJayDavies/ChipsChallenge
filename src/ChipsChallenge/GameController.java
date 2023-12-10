@@ -21,9 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameController extends Application {
 
@@ -130,6 +128,10 @@ public class GameController extends Application {
             actorsToMove.add(ActorType.BUG);
         }
 
+        if(currentTick == 3) {
+            actorsToMove.add(ActorType.FROG);
+        }
+
         if(currentTick == 4) {
             currentTime = currentTime - 1;
             if(currentTime == 0) {
@@ -209,6 +211,10 @@ public class GameController extends Application {
         for(int i=0; i<tileLayerGraphics.length; i++) {
             for(int j=0; j<tileLayerGraphics[i].length; j++) {
                 gc.drawImage(tileLayerGraphics[i][j].getImage(), j * 50, i * 50);
+                if(tileLayerGraphics[i][j].getType() == TileType.CHIPSOCKET) {
+                    ChipSocket cs = (ChipSocket) tileLayerGraphics[i][j];
+                    gc.drawImage(new Image("images/stuff/" + cs.getChipsRequired() + ".png"), j * 50, i * 50);
+                }
             }
         } // Make these for loops into a method
         Item[][] itemLayerGraphics = currentLevel.getItemLayer().getItems(); // Need to make this more efficient, far to slow
@@ -379,10 +385,129 @@ public class GameController extends Application {
                                 getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
                         previousButton.getLinkedTrap().setActive(false);
                     }
+                } else if(monster.getType() == ActorType.FROG && movingActors.contains(monster.getType())) {
+                    int[] originalPosition = new int[]{monster.getX(), monster.getY()};
+                    Frog currentMonster = (Frog) monster;
+                    int[] nextMove = moveFrog(originalPosition, currentMonster);
+                    currentLevel.getActorLayer().updateActor(currentLevel.getActorLayer().getActor(originalPosition[0], originalPosition[1]),
+                            nextMove[0], nextMove[1]);
+                    TileType lastTileType = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]).getType();
+                    if(lastTileType == TileType.BUTTON) {
+                        ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
+                                getTileAt(originalPosition[0], originalPosition[1]); // Refactor this later
+                        previousButton.getLinkedTrap().setActive(false);
+                    }
                 }
             }
         }
     }
+
+
+    /*
+    private int[] moveFrog(Frog frog, int[] originalPosition) {
+        ArrayList<int[]> visitedPositions = new ArrayList<>();
+        FrogMove left = moveFrogRecursive(originalPosition, frog, visitedPositions, new FrogMove(0, KeyCode.A));
+        FrogMove up = moveFrogRecursive(originalPosition, frog, visitedPositions, new FrogMove(0, KeyCode.W));
+        FrogMove right = moveFrogRecursive(originalPosition, frog, visitedPositions, new FrogMove(0, KeyCode.D));
+        FrogMove down = moveFrogRecursive(originalPosition, frog, visitedPositions, new FrogMove(0, KeyCode.S));
+        int minMove = Math.min(left.getStepsTaken(), Math.min(up.getStepsTaken(), Math.min(right.getStepsTaken(), down.getStepsTaken())));
+        FrogMove minFrogMove = null;
+        if(!(minMove >= 100)) {
+            if(minMove == left.getStepsTaken()) {
+                minFrogMove = left;
+            } else if(minMove == up.getStepsTaken()) {
+                minFrogMove = up;
+            } else if(minMove == right.getStepsTaken()) {
+                minFrogMove = right;
+            } else {
+                minFrogMove = down;
+            }
+            int[] nextMove = getNewPosition(originalPosition[0], originalPosition[1], minFrogMove.getDirection());
+            int[] finalPosition = moveMonster(nextMove, originalPosition, frog);
+            if(isValidMove(finalPosition)) {
+                return finalPosition;
+            } else {
+                return originalPosition;
+            }
+        } else {
+            return originalPosition;
+        }
+
+    }
+    */
+
+    private int[] moveFrog(int[] originalPosition, Frog frog) {
+        ArrayList<KeyCode> directions = new ArrayList<>();
+        directions.add(KeyCode.A);
+        directions.add(KeyCode.W);
+        directions.add(KeyCode.D);
+        directions.add(KeyCode.S);
+
+        Collections.shuffle(directions);
+        Iterator<KeyCode> directionsIterator = directions.iterator();
+        while(directionsIterator.hasNext()) {
+            KeyCode currentDirection = directionsIterator.next();
+            int[] finalPosition = moveMonster(getNewPosition(originalPosition[0], originalPosition[1], currentDirection), originalPosition, frog);
+            if(finalPosition != originalPosition) {
+                return finalPosition;
+            } else {
+                directionsIterator.remove();
+            }
+        }
+        return originalPosition;
+    }
+
+    /*
+
+    private FrogMove moveFrogRecursive(int[] position, Frog frog, ArrayList<int[]> visitedPositions, FrogMove frogMove) {
+        if(visitedPositions.contains(position)) {
+            return new FrogMove(100, frogMove.getDirection());
+        } else {
+            int[][] newPositions = new int[4][2];
+            KeyCode currentDirection = KeyCode.A;
+            for(int i=0; i<4; i++) {
+                newPositions[i] = getNewPosition(position[0], position[1], currentDirection);
+                currentDirection = turn(currentDirection);
+            }
+            for(int[] currentPosition: newPositions) {
+                if(isValidMove(currentPosition)) {
+                    int[] finalPosition = collisionOccurredTile(currentPosition, position, checkForTileCollision(currentPosition), frog.getType());
+                    finalPosition = collisionOccuredActor(finalPosition, position, checkForActorCollision(finalPosition), frog.getType());
+                    if(checkForActorCollision(finalPosition).equals(ActorType.PLAYER)) {
+                        return frogMove;
+                    } else if(currentPosition == finalPosition) {
+                        return new FrogMove(100, frogMove.getDirection());
+                    } else {
+                        visitedPositions.add(finalPosition);
+                        FrogMove newFrogMove = new FrogMove(frogMove.getStepsTaken() + 1, frogMove.getDirection());
+                        return moveFrogRecursive(finalPosition, frog, visitedPositions, newFrogMove);
+                    }
+                } else {
+                    return new FrogMove(1000, frogMove.getDirection());
+                }
+            }
+        }
+        // Shouldn't happen
+        return new FrogMove(1000, frogMove.getDirection());
+    }
+
+    // Move this into frog later
+    private KeyCode turn(KeyCode direction) {
+        switch (direction) {
+            case A:
+                return KeyCode.W;
+            case W:
+                return KeyCode.D;
+            case D:
+                return KeyCode.S;
+            case S:
+                return KeyCode.A;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+     */
 
     private int[] moveMonster(int[] newPosition, int[] originalPosition, Actor monster) {
         if(isValidMove(newPosition)) {

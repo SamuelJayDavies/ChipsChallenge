@@ -12,7 +12,7 @@ public class Frog extends Actor {
      * Constructs a new Frog instance with the FROG type and a default image.
      */
     public Frog() {
-        super(ActorType.FROG, new Image("null"));
+        super(ActorType.FROG, new Image("images/stuff/frog.png"));
     }
 
     /**

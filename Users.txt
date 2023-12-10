@@ -76,3 +76,13 @@ gawwee,3
 gawwe,0
 gawwwe,0
 btbt,1
+dadw,0
+sawd,0
+numberTest,2
+fawf,0
+dope,0
+dawf,0
+asd,0
+dwd,0
+awdd,0
+dsa,0
