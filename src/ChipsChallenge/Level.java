@@ -81,6 +81,21 @@ public class Level {
         }
     }
 
+    public static String convertDirectionToString(KeyCode direction) {
+        switch(direction) {
+            case D:
+                return "right";
+            case A:
+                return "left";
+            case W:
+                return "up";
+            case S:
+                return "down";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     public int getWidth() {
         return width;
     }

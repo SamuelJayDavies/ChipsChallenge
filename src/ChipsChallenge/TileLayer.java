@@ -1,6 +1,7 @@
 package ChipsChallenge;
 
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 
 import java.util.Scanner;
 
@@ -101,5 +102,82 @@ public class TileLayer {
             currentTrap.setX(x);
             currentTrap.setY(y);
         }
+    }
+
+    public static String convertTileToString(Tile tile) {
+        switch(tile.getType()) {
+            case PATH:
+                return "p";
+            case DIRT:
+                return "di";
+            case WALL:
+                return "w";
+            case EXIT:
+                return "e";
+            case BUTTON:
+                return "b";
+            case TRAP:
+                return "t";
+            case WATER:
+                return "wt";
+            case ICE:
+                return "i";
+            case ICETR:
+                return "itr";
+            case ICETL:
+                return "itl";
+            case ICEBR:
+                return "ibr";
+            case ICEBL:
+                return "ibl";
+            case CHIPSOCKET:
+                ChipSocket currentTile = (ChipSocket) tile;
+                return "cs" + currentTile.getChipsRequired();
+            case DOOR:
+                Door currentDoor = (Door) tile;
+                char doorColour = currentDoor.getColour().toString().charAt(0);
+                return "d" + Character.toLowerCase(doorColour);
+            default:
+                // That should have covered every tile
+                return "ERROR";
+        }
+    }
+
+    public static KeyCode convertIceDirection(KeyCode currentDirection, TileType tileType) {
+        if (tileType != TileType.ICE) {
+            switch (currentDirection) {
+                case D:
+                    if (tileType.equals(TileType.ICETR)) {
+                        return KeyCode.S;
+                    } else if (tileType.equals(TileType.ICEBR)) {
+                        return KeyCode.W;
+                    }
+                    break;
+                case A:
+                    if (tileType.equals(TileType.ICETL)) {
+                        return KeyCode.S;
+                    } else if (tileType.equals(TileType.ICEBL)) {
+                        return KeyCode.W;
+                    }
+                    break;
+                case W:
+                    if (tileType.equals(TileType.ICETR)) {
+                        return KeyCode.A;
+                    } else if (tileType.equals(TileType.ICETL)) {
+                        return KeyCode.D;
+                    }
+                    break;
+                case S:
+                    if (tileType.equals(TileType.ICEBR)) {
+                        return KeyCode.A;
+                    } else if (tileType.equals(TileType.ICEBL)) {
+                        return KeyCode.D;
+                    }
+                    break;
+                default:
+                    return currentDirection;
+            }
+        }
+        return currentDirection;
     }
 }

@@ -77,7 +77,7 @@ gawwe,0
 gawwwe,0
 btbt,1
 dadw,0
-sawd,0
+sawd,1
 numberTest,2
 fawf,0
 dope,0
@@ -88,3 +88,5 @@ awdd,0
 dsa,0
 brandNewUser,5
 asd d,0
+fileHandling,1
+dasd,0

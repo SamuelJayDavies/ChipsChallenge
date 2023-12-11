@@ -151,4 +151,23 @@ public class ActorLayer {
         actor.setY(y);
         actors[actor.getY()][actor.getX()] = actor;
     }
+
+    public static String convertActorToString(Actor actor) {
+        switch(actor.getType()) {
+            case NOACTOR:
+                return "n";
+            case PLAYER:
+                return "p";
+            case PINKBALL:
+                return "pb";
+            case BLOCK:
+                return "bl";
+            case BUG:
+                return "b";
+            case FROG:
+                return "f";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
 }

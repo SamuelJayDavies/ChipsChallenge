@@ -6,5 +6,5 @@ Better,580.0
 gg,575.0
 bob,570.0
 btbt,565.0
+sawd,560.0
 brandNewUser,530.0
-newUser,515.0

@@ -112,4 +112,20 @@ class ItemLayer {
     public void removeItem(int x, int y) {
         items[y][x] = new Blank();
     }
+
+    public static String convertItemToString(Item item) {
+        switch(item.getType()) {
+            case NOTHING:
+                return "n";
+            case KEY:
+                Key currentKey = (Key) item;
+                char doorColour = currentKey.getColour().toString().charAt(0);
+                return "k" + Character.toLowerCase(doorColour);
+            case CHIP:
+                return "c";
+            default:
+                // Every case should have been covered
+                return "ERROR";
+        }
+    }
 }
