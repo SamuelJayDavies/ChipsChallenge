@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 /**
  * The ActorLayer class represents a layer of actors
- * in the game Chips Challenge.
+ * in the game CaveQuest.
  * It manages the arrangement of actors on a grid,
  * including the player and various monsters.
+ *
+ * @author Samuel Davies
  */
 public class ActorLayer {
 
@@ -28,22 +30,26 @@ public class ActorLayer {
     /**
      * Constructs an ActorLayer with the specified width,
      * height, and initial arrangement of actors.
-     * @param width      The width of the actor layer grid.
-     * @param height     The height of the actor layer grid.
-     * @param actorArr   An array representing the initial
-     *                   arrangement of actors in the grid.
+     *
+     * @param width    The width of the actor layer grid.
+     * @param height   The height of the actor layer grid.
+     * @param actorArr An array representing the initial
+     *                 arrangement of actors in the grid.
      */
-    public ActorLayer(int width, int height, String[] actorArr) {
+    public ActorLayer(final int width, final int height, String[] actorArr) {
         actors = new Actor[height][width];
         monsters = new ArrayList<>();
-        initialiseItems(actorArr);
+        initialiseActors(actorArr);
     }
 
-    private void initialiseItems(String[] actorArr) {
+    /**
+     * Creates the actors matrix with the supplied arrangement of the actors.
+     *
+     * @param actorArr An array representing the actors initial coordinates.
+     */
+    private void initialiseActors(String[] actorArr) {
         int j = 0;
-        for (String actorRow: actorArr) {
-            // Should probably have this in game controller or a
-            //specialised file
+        for (String actorRow : actorArr) {
             String[] currentActors = actorRow.split(",");
             for (int i = 0; i < actors[j].length; i++) {
                 actors[j][i] = identifyActor(currentActors[i]);
@@ -53,6 +59,12 @@ public class ActorLayer {
         }
     }
 
+    /**
+     * Identifies an actor by its equivalent letter and returns it.
+     *
+     * @param type The letter representing the actor.
+     * @return A new instance of the actor.
+     */
     private Actor identifyActor(String type) {
         switch (type) {
             case "n":
@@ -96,6 +108,7 @@ public class ActorLayer {
 
     /**
      * Gets the 2D array of actors representing the grid.
+     *
      * @return The 2D array of actors.
      */
     public Actor[][] getActors() {
@@ -104,6 +117,7 @@ public class ActorLayer {
 
     /**
      * Sets the actor at the specified coordinates in the grid.
+     *
      * @param x        The X-coordinate.
      * @param y        The Y-coordinate.
      * @param newActor The new actor to set.
@@ -115,6 +129,7 @@ public class ActorLayer {
     /**
      * Checks if the specified coordinates are within
      * the valid bounds of the actor layer grid.
+     *
      * @param x The X-coordinate.
      * @param y The Y-coordinate.
      * @return True if the position is valid, false otherwise.
@@ -125,6 +140,7 @@ public class ActorLayer {
 
     /**
      * Gets the main player in the actor layer.
+     *
      * @return The main player.
      */
     public Player getPlayer() {
@@ -133,6 +149,7 @@ public class ActorLayer {
 
     /**
      * Gets the list of monsters in the actor layer.
+     *
      * @return The list of monsters.
      */
     public ArrayList<Actor> getMonsters() {
@@ -141,6 +158,7 @@ public class ActorLayer {
 
     /**
      * Updates the position of the specified actor in the grid.
+     *
      * @param actor The actor to update.
      * @param x     The new X-coordinate.
      * @param y     The new Y-coordinate.
@@ -152,8 +170,15 @@ public class ActorLayer {
         actors[actor.getY()][actor.getX()] = actor;
     }
 
+
+    /**
+     * Converts an actor into its String representation.
+     *
+     * @param actor The actor to be converted to its letter form.
+     * @return The letter that represents the actor.
+     */
     public static String convertActorToString(Actor actor) {
-        switch(actor.getType()) {
+        switch (actor.getType()) {
             case NOACTOR:
                 return "n";
             case PLAYER:

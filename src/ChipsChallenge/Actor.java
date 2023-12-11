@@ -5,6 +5,8 @@ import javafx.scene.image.Image;
 /**
  * The Actor class is a base class for game entities that can appear on game.
  * It provides common properties and methods for different types of game actors.
+ *
+ * @author Samuel Davies, Urvi Patel
  */
 public class Actor {
 
@@ -30,17 +32,19 @@ public class Actor {
 
     /**
      * Constructs a new Actor with the specified type and image.
+     *
      * @param type  The type of the actor, represented by the ActorType enum.
      * @param image The image associated with the actor.
      */
 
-    public Actor(ActorType type, Image image) {
+    public Actor(final ActorType type, final Image image) {
         this.type = type;
         this.image = image;
     }
 
     /**
      * Gets the type of the actor.
+     *
      * @return The type of the actor.
      */
     public ActorType getType() {
@@ -49,6 +53,7 @@ public class Actor {
 
     /**
      * Gets the image associated with the actor.
+     *
      * @return The image of the actor.
      */
     public Image getImage() {
@@ -57,6 +62,7 @@ public class Actor {
 
     /**
      * Gets the X-coordinate of the actor on the game.
+     *
      * @return The X-coordinate of the actor.
      */
     public int getX() {
@@ -65,6 +71,7 @@ public class Actor {
 
     /**
      * Sets the X-coordinate of the actor on the game.
+     *
      * @param x The new X-coordinate of the actor.
      */
     public void setX(int x) {
@@ -73,6 +80,7 @@ public class Actor {
 
     /**
      * Gets the Y-coordinate of the actor on the game.
+     *
      * @return The Y-coordinate of the actor.
      */
     public int getY() {
@@ -81,6 +89,7 @@ public class Actor {
 
     /**
      * Sets the Y-coordinate of the actor on the game.
+     *
      * @param y The new Y-coordinate of the actor.
      */
     public void setY(int y) {
@@ -89,6 +98,7 @@ public class Actor {
 
     /**
      * Sets both X and Y coordinates of the actor on the game grid.
+     *
      * @param x The new X-coordinate of the actor.
      * @param y The new Y-coordinate of the actor.
      */

@@ -51,7 +51,7 @@ alowd,0
 john,0
 mawd,0
 gg,1
-ggg,1
+ggg,2
 worst,0
 gwg,1
 dw,0
@@ -90,3 +90,15 @@ brandNewUser,5
 asd d,0
 fileHandling,1
 dasd,0
+dvv,1
+nb,1
+ad,4
+testeinr,0
+fggq,0
+dddw,0
+ghg,0
+gggg,0
+ggega,0
+awdgg,0
+ggwgwg,0
+gagw,0

@@ -2,9 +2,11 @@ package ChipsChallenge;
 
 /**
  * The ActorType enum represents the different types of actors
- * in the game Chips Challenge.
+ * in the game CaveQuest.
  * Each enum constant corresponds to a specific type of actor.
  * Possible values include BLOCK, PINKBALL, BUG, PLAYER, FROG, and NOACTOR.
+ *
+ * @author Samuel Davies
  */
 public enum ActorType {
 

@@ -4,11 +4,13 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 
 /**
- * The Bug class represents a type of monster in the game Chips Challenge.
+ * The Bug class represents a type of monster in the game CaveQuest.
  * Bugs can only travel over specific tiles and
  * follow the left or right edge of the path.
  * They are prevented from moving onto blocking tiles,
  * other monsters, or out-of-bounds positions.
+ *
+ * @author Samuel Davies
  */
 
 public class Bug extends Actor {
@@ -29,13 +31,13 @@ public class Bug extends Actor {
      * Initializes the Bug with the BUG type and a default image.
      * Sets the initial direction to follow the left edge.
      */
-
     public Bug() {
         super(ActorType.BUG, new Image("images/stuff/bug.png"));
     }
 
     /**
      * Gets the direction that the bug is currently following.
+     *
      * @return The KeyCode representing the follow direction.
      */
     public KeyCode getFollowDirection() {
@@ -44,6 +46,7 @@ public class Bug extends Actor {
 
     /**
      * Sets both the follow direction and the current direction of the bug.
+     *
      * @param followDirection The KeyCode representing the follow direction.
      * @param direction       The KeyCode representing the current direction.
      */
@@ -54,6 +57,7 @@ public class Bug extends Actor {
 
     /**
      * Sets the follow direction of the bug.
+     *
      * @param followDirection The KeyCode representing the follow direction.
      */
     public void setFollowDirection(KeyCode followDirection) {
@@ -62,6 +66,7 @@ public class Bug extends Actor {
 
     /**
      * Gets the current direction of the bug.
+     *
      * @return The KeyCode representing the current direction.
      */
     public KeyCode getDirection() {
@@ -70,6 +75,7 @@ public class Bug extends Actor {
 
     /**
      * Sets the current direction of the bug.
+     *
      * @param direction The KeyCode representing the current direction.
      */
     public void setDirection(KeyCode direction) {
@@ -78,6 +84,7 @@ public class Bug extends Actor {
 
     /**
      * Turns the bug in its current direction a specified number of times.
+     *
      * @param numberOfTimes The number of times to turn the bug.
      */
     public void turnBug(int numberOfTimes) {
@@ -114,17 +121,5 @@ public class Bug extends Actor {
                 }
             }
         }
-    }
-
-    /**
-     * Reverses the provided direction.
-     * @param direction The KeyCode to reverse.
-     * @return The reversed KeyCode.
-     */
-    public KeyCode reverseDirection(KeyCode direction) {
-        return (direction == KeyCode.D) ? KeyCode.A
-                : (direction == KeyCode.A) ? KeyCode.D
-                : (direction == KeyCode.W) ? KeyCode.S
-                : KeyCode.W;
     }
 }

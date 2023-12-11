@@ -3,39 +3,55 @@ package ChipsChallenge;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 
-import java.util.Scanner;
-
+/**
+ * The TileLayer class represents a layer of tiles in the game CaveQuest.
+ * It manages the arrangement of tiles as a matrix and has various helper methods
+ * to deal with updating and changing the tiles.
+ *
+ * @author Samuel Davies
+ */
 public class TileLayer {
+
+    /**
+     * A matrix representing the grid of tiles in the tileLayer.
+     */
     private Tile[][] tiles;
 
+    /**
+     * Constructs a new TileLayer with the specified width, height and the
+     * initial arrangements of the tiles.
+     *
+     * @param width   The width of the tile layer grid.
+     * @param height  The height of the tile layer grid.
+     * @param tileArr An array representing the initial arrangement of tiles in the grid.
+     */
     public TileLayer(int width, int height, String[] tileArr) {
         this.tiles = new Tile[height][width];
-        newInitialiseTiles(tileArr);
+        initialiseTiles(tileArr);
     }
 
-    private void initialiseTiles(Scanner levelScanner) {
-        int j=0;
-        while (levelScanner.hasNextLine()) {
-            String currentRow = levelScanner.nextLine();
-            String[] currentTiles = currentRow.split(","); // Should probably have this in game controller or a
-            for (int i=0; i<tiles[j].length; i++) {              // specialised file
+    /**
+     * Creates the tiles matrix with the supplied arrangement of the tiles.
+     *
+     * @param tileArr An array representing the initial coordinates for the tiles.
+     */
+    private void initialiseTiles(String[] tileArr) {
+        int j = 0;
+        for (String tileRow : tileArr) {
+            String[] currentTiles = tileRow.split(",");
+            for (int i = 0; i < tiles[j].length; i++) {
                 tiles[j][i] = identifyTile(currentTiles[i]);
             }
             j++;
         }
     }
 
-    private void newInitialiseTiles(String[] tileArr) {
-        int j=0;
-        for (String tileRow: tileArr) {
-            String[] currentTiles = tileRow.split(","); // Should probably have this in game controller or a
-            for (int i=0; i<tiles[j].length; i++) {              // specialised file
-                tiles[j][i] = identifyTile(currentTiles[i]);
-            }
-            j++;
-        }
-    }
-
+    /**
+     * Identifies a tile by its equivalent letter and returns it.
+     *
+     * @param type The letter representing the tile.
+     * @return A new instance of the tile.
+     */
     private Tile identifyTile(String type) {
         switch (type) {
             case "p":
@@ -63,9 +79,9 @@ public class TileLayer {
             case "ibl":
                 return new Tile(TileType.ICEBL, new Image("images/stuff/iceBL.png"));
             default:
-                if(type.charAt(0) == 'c' && type.charAt(1) == 's') {
+                if (type.charAt(0) == 'c' && type.charAt(1) == 's') {
                     return new ChipSocket(Integer.parseInt(type.substring(2)));
-                } else if(type.charAt(0) == 'd') {
+                } else if (type.charAt(0) == 'd') {
                     return new Door(type.charAt(1));
                 } else {
                     return null;
@@ -73,6 +89,13 @@ public class TileLayer {
         }
     }
 
+    /**
+     * Gets the tile at the specified coordinates.
+     *
+     * @param x The X-coordinate.
+     * @param y The Y-coordinate.
+     * @return The actor at the specified coordinates, or null if out of bounds.
+     */
     public Tile getTileAt(int x, int y) {
         if (isValidCoordinate(x, y)) {
             return tiles[y][x];
@@ -80,20 +103,47 @@ public class TileLayer {
         return null;
     }
 
+    /**
+     * Sets the tile at the specified coordinates in the grid.
+     *
+     * @param x       The X-coordinate.
+     * @param y       The Y-coordinate.
+     * @param newTile The new tile to set.
+     */
     public void setTileAt(int x, int y, Tile newTile) {
         tiles[y][x] = newTile;
     }
 
+    /**
+     * Gets the matrix of tiles.
+     *
+     * @return The 2D array of tiles.
+     */
     public Tile[][] getTiles() {
         return tiles;
     }
 
+    /**
+     * Checks if the specified coordinates are within
+     * the valid bounds of the tile layer grid.
+     *
+     * @param x The X-coordinate.
+     * @param y The Y-coordinate.
+     * @return True if the position is valid, false otherwise.
+     */
     private boolean isValidCoordinate(int x, int y) {
         return x >= 0 && x < tiles[0].length && y >= 0 && y < tiles.length;
     }
 
+    /**
+     * Updates the information about a specified tile in the matrix.
+     *
+     * @param currentTile The tile to update.
+     * @param x           The new X-coordinate.
+     * @param y           The new Y-coordinate.
+     */
     public void updateTile(Tile currentTile, int x, int y) {
-        if(currentTile.getType() == TileType.BUTTON) {
+        if (currentTile.getType() == TileType.BUTTON) {
             // We can use typecasting here because we know their type
             Button currentButton = (Button) currentTile;
             Trap currentTrap = (Trap) getTileAt(x, y);
@@ -104,8 +154,14 @@ public class TileLayer {
         }
     }
 
+    /**
+     * Converts a tile into its String representation.
+     *
+     * @param tile The tile to be converted to its letter form.
+     * @return The letter that represents the tile.
+     */
     public static String convertTileToString(Tile tile) {
-        switch(tile.getType()) {
+        switch (tile.getType()) {
             case PATH:
                 return "p";
             case DIRT:
@@ -139,10 +195,18 @@ public class TileLayer {
                 return "d" + Character.toLowerCase(doorColour);
             default:
                 // That should have covered every tile
-                return "ERROR";
+                throw new IllegalArgumentException();
         }
     }
 
+    /**
+     * Takes a direction and ice type and returns which direction it would send the actor. This
+     * direction is represented in KeyCode form.
+     *
+     * @param currentDirection The KeyCode direction the actor is currently heading in.
+     * @param tileType         The type of ice they are standing on.
+     * @return The new direction the actor will now be facing.
+     */
     public static KeyCode convertIceDirection(KeyCode currentDirection, TileType tileType) {
         if (tileType != TileType.ICE) {
             switch (currentDirection) {
