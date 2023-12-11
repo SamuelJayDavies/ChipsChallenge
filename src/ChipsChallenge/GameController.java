@@ -195,7 +195,7 @@ public class GameController extends Application {
      *              the application scene can be set.
      *              Applications may create other stages, if needed, but they will not be
      *              primary stages.
-     * @throws IOException
+     * @throws IOException When the resource file can't be found.
      */
     @Override
     public void start(Stage stage) throws IOException {
@@ -1161,7 +1161,7 @@ public class GameController extends Application {
      * Checks if the player collided with any items at their position. If they have it will either
      * add a chip to their chip count or add the key to their inventory.
      *
-     * @param position
+     * @param position The players current position.
      */
     private void collisionOccurredItem(int[] position) {
         Item possibleItem = currentLevel.getItemLayer().getItemAt(position[0], position[1]);

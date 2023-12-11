@@ -16,6 +16,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Creates and manages high scores and table view of high scores. The controller reads in and populates
+ * the table with User scores relevant to the current level.
+ */
 public class HighscoreController extends Application {
 
     /**

@@ -97,7 +97,7 @@ public class AfterScreenController extends Application {
      *              the application scene can be set.
      *              Applications may create other stages, if needed, but they will not be
      *              primary stages.
-     * @throws IOException
+     * @throws IOException When the resource file can't be found.
      */
     @Override
     public void start(Stage stage) throws IOException {
