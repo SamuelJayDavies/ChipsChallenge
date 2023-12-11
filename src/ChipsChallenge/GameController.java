@@ -344,7 +344,7 @@ public class GameController extends Application {
         if(nextMove == KeyCode.W || nextMove == KeyCode.A
                 || nextMove == KeyCode.S || nextMove == KeyCode.D) {
             int[] originalPosition = new int[]{currentPlayer.getX(), currentPlayer.getY()};
-            int[] nextPosition = getNewPosition(originalPosition[0], originalPosition[1], nextMove);
+            int[] nextPosition = Game.getNewPosition(originalPosition[0], originalPosition[1], nextMove);
             Tile possibleTrap = currentLevel.getTileLayer().getTileAt(originalPosition[0], originalPosition[1]);
             if(possibleTrap.getType() == TileType.TRAP) {
                 Trap foundTrap = (Trap) possibleTrap;
@@ -366,26 +366,9 @@ public class GameController extends Application {
                     currentLevel.getTileLayer().setTileAt(originalPosition[0], originalPosition[1], new Path());
                     // The last tile was a button, and they aren't currently still standing on the button
                 } else if (lastTileType == TileType.BUTTON && originalPosition != finalPosition) {
-                    ChipsChallenge.Button previousButton = (ChipsChallenge.Button) currentLevel.getTileLayer().
-                            getTileAt(originalPosition[0], originalPosition[1]);
-                    previousButton.getLinkedTrap().setActive(false);
+                    resetButton(lastTileType, originalPosition);
                 }
             }
-        }
-    }
-
-    private int[] getNewPosition(int x, int y, KeyCode nextMove) {
-        switch (nextMove) {
-            case D:
-                return new int[]{x+1,y};
-            case A:
-                return new int[]{x-1,y};
-            case W:
-                return new int[]{x, y-1};
-            case S:
-                return new int[]{x, y+1};
-            default:
-                return new int[]{x,y};
         }
     }
 
@@ -397,7 +380,7 @@ public class GameController extends Application {
                 if(monster.getType() == ActorType.PINKBALL && movingActors.contains(monster.getType())) {
                     PinkBall currentMonster = (PinkBall) monster;
                     int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
-                    int[] ballNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                    int[] ballNextMove = Game.getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                     if(collisionHandler.isValidMove(ballNextMove)) {
                         int[] finalPosition = collisionOccurredTile(ballNextMove, originalPosition, collisionHandler.checkForTileCollision(ballNextMove), currentMonster.getType());
                         finalPosition = collisionOccuredActor(finalPosition, originalPosition, collisionHandler.checkForActorCollision(finalPosition), monster.getType());
@@ -417,20 +400,20 @@ public class GameController extends Application {
                     Bug currentMonster = (Bug) monster;
                     int[] originalPosition = new int[]{currentMonster.getX(), currentMonster.getY()};
                     currentMonster.turnBug(1);
-                    int[] bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                    int[] bugNextMove = Game.getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                     int[] finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
 
                     if(finalPosition == originalPosition) {
                         currentMonster.turnBug(3);
-                        bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                        bugNextMove = Game.getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                         finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                         if(finalPosition == originalPosition) {
                             currentMonster.turnBug(1);
-                            bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                            bugNextMove = Game.getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                             finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                             if(finalPosition == originalPosition) {
                                 currentMonster.turnBug(2);
-                                bugNextMove = getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
+                                bugNextMove = Game.getNewPosition(currentMonster.getX(), currentMonster.getY(), currentMonster.getDirection());
                                 finalPosition = moveMonster(bugNextMove, originalPosition, currentMonster);
                                 if(finalPosition == originalPosition) {
                                     // Don't Move
@@ -510,7 +493,7 @@ public class GameController extends Application {
         Iterator<KeyCode> directionsIterator = directions.iterator();
         while(directionsIterator.hasNext()) {
             KeyCode currentDirection = directionsIterator.next();
-            int[] finalPosition = moveMonster(getNewPosition(originalPosition[0], originalPosition[1], currentDirection), originalPosition, frog);
+            int[] finalPosition = moveMonster(Game.getNewPosition(originalPosition[0], originalPosition[1], currentDirection), originalPosition, frog);
             if(finalPosition != originalPosition) {
                 return finalPosition;
             } else {
@@ -588,11 +571,12 @@ public class GameController extends Application {
             case BUG,PINKBALL,FROG,PLAYER:
                 if(!(actorTypeCollision == originalActor) && originalActor != ActorType.BLOCK && (actorTypeCollision == ActorType.PLAYER || originalActor == ActorType.PLAYER)) {
                     killPlayer();
+                    return originalPosition;
                 }
                 return originalPosition;
             case BLOCK:
                 if(originalActor == ActorType.PLAYER) {
-                    int[] blockNextMove = getNewPosition(position[0], position[1], nextMove);
+                    int[] blockNextMove = Game.getNewPosition(position[0], position[1], nextMove);
                     if(collisionHandler.isValidMove(blockNextMove)) {
                         int[] finalPosition = collisionOccurredTile(blockNextMove, position, collisionHandler.checkForTileCollision(blockNextMove), actorTypeCollision);
                         finalPosition = collisionOccuredActor(finalPosition, originalPosition, collisionHandler.checkForActorCollision(finalPosition), actorTypeCollision);
@@ -653,7 +637,7 @@ public class GameController extends Application {
             case ICE, ICEBL, ICEBR, ICETL, ICETR:
                 if(actorType == ActorType.PLAYER || actorType == ActorType.BLOCK) {
                     nextMove = TileLayer.convertIceDirection(nextMove, collisionTileType);
-                    int[] newerPosition = getNewPosition(position[0], position[1], nextMove);
+                    int[] newerPosition = Game.getNewPosition(position[0], position[1], nextMove);
                     if(!collisionHandler.isValidMove(newerPosition)) {
                         return originalPosition;
                     }
@@ -669,6 +653,7 @@ public class GameController extends Application {
             case WATER:
                 if(actorType == ActorType.PLAYER) {
                     killPlayer();
+                    return originalPosition;
                 } else if(actorType == ActorType.BLOCK) {
                     return position;
                 } else {
@@ -702,8 +687,6 @@ public class GameController extends Application {
                 currentButton.getLinkedTrap().setActive(true);
                 return position;
             case EXIT:
-                // Calculate score here
-                // Put this in its own method
                 if(actorType == ActorType.PLAYER) {
                     exitReached();
                     // For when block is pushed onto exit via ice

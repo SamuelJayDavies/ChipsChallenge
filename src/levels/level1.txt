@@ -3,7 +3,7 @@
 p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,
 p,i,i,itr,p,p,w,w,w,p,p,wt,wt,wt,p,
 p,p,p,i,p,p,b,p,w,t,p,wt,p,wt,p,
-p,itl,i,ibr,p,p,p,di,p,p,p,p,p,wt,p,
+p,itl,i,ibr,p,p,di,di,p,p,p,p,p,wt,p,
 p,i,p,p,p,p,p,p,w,p,p,wt,p,wt,p,
 p,ibl,i,i,p,p,w,w,w,p,p,wt,wt,wt,db,
 p,p,p,p,p,p,p,p,p,p,p,p,p,cs2,e,

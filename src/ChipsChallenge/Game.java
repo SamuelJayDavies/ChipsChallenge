@@ -1,5 +1,7 @@
 package ChipsChallenge;
 
+import javafx.scene.input.KeyCode;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -20,6 +22,21 @@ public class Game {
             }
         }catch(FileNotFoundException e) {
             System.out.println("File not found");
+        }
+    }
+
+    public static int[] getNewPosition(int x, int y, KeyCode nextMove) {
+        switch (nextMove) {
+            case D:
+                return new int[]{x+1,y};
+            case A:
+                return new int[]{x-1,y};
+            case W:
+                return new int[]{x, y-1};
+            case S:
+                return new int[]{x, y+1};
+            default:
+                return new int[]{x,y};
         }
     }
 
