@@ -1,0 +1,2 @@
+brandNewUser,194.0
+Sam,194.0

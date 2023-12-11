@@ -1,4 +1,4 @@
-Sam,5
+Sam,6
 sam,0
 awdawgtawt,0
 player,1
@@ -86,7 +86,7 @@ asd,0
 dwd,0
 awdd,0
 dsa,0
-brandNewUser,5
+brandNewUser,7
 asd d,0
 fileHandling,1
 dasd,0

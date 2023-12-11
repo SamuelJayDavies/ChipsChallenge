@@ -542,6 +542,10 @@ public class GameController extends Application {
      */
     public void nextLevelLoad() {
         int currentLevel = currentUser.getHighestLevelNum() + 1;
+        // For when they are on the final level
+        if(currentLevel == 8) {
+            currentLevel--;
+        }
         File myFile = new File("src/levels/level" + currentLevel + ".txt");
         Scanner myReader = null;
         try {
